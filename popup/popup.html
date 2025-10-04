@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn AI Assistant</title>
+    <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="popup-container" data-testid="popup-container">
+        <!-- Header -->
+        <div class="header" data-testid="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <i class="fab fa-linkedin-in"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1 data-testid="title">LinkedIn AI Assistant</h1>
+                        <p data-testid="subtitle">Powered by Muzamil Attiq</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" data-testid="button-settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" data-testid="main-content">
+            <!-- Global Settings -->
+            <div class="settings-card" data-testid="global-settings">
+                <div class="card-header">
+                    <h2><i class="fas fa-palette"></i> Global Tone Settings</h2>
+                </div>
+                <div class="settings-content">
+                    <label class="form-label">Default Writing Tone</label>
+                    <select id="globalTone" class="form-select" data-testid="select-global-tone">
+                        <option value="professional">Professional</option>
+                        <option value="friendly">Friendly</option>
+                        <option value="persuasive">Persuasive</option>
+                        <option value="storytelling">Storytelling</option>
+                        <option value="humorous">Humorous</option>
+                    </select>
+                </div>
+                <div class="shortcuts-info">
+                    <div class="shortcuts-header">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Quick Access Shortcuts</span>
+                    </div>
+                    <div class="shortcuts-list">
+                        <div><kbd>Ctrl+Shift+S</kbd> Suggestions</div>
+                        <div><kbd>Ctrl+Shift+R</kbd> Rewrite</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Features -->
+            <div class="features-section" data-testid="ai-features">
+                <h2 class="section-title"><i class="fas fa-robot"></i> AI Features</h2>
+                
+                <!-- AI Post Creator -->
+                <div class="feature-card" data-testid="feature-post-creator">
+                    <div class="feature-header">
+                        <div class="feature-info">
+                            <div class="feature-icon gradient-primary">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h3>AI Post Creator</h3>
+                                <p>Generate engaging LinkedIn posts</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="postCreatorEnabled" checked data-testid="toggle-post-creator">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="tag tag-primary">Smart Hooks</span>
+                        <span class="tag tag-accent">Auto Format</span>
+                        <span class="tag tag-secondary">Hashtags</span>
+                    </div>
+                </div>
+
+                <!-- Comment Suggestions -->
+                <div class="feature-card" data-testid="feature-comment-suggestions">
+                    <div class="feature-header">
+                        <div class="feature-info">
+                            <div class="feature-icon gradient-accent">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Comment Suggestions</h3>
+                                <p>Smart comment ideas for any post</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="commentSuggestionsEnabled" checked data-testid="toggle-comment-suggestions">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="tag tag-accent">Context Aware</span>
+                        <span class="tag tag-primary">3-5 Options</span>
+                        <span class="tag tag-secondary">One-Click</span>
+                    </div>
+                </div>
+
+                <!-- Comment Rewriter -->
+                <div class="feature-card" data-testid="feature-comment-rewriter">
+                    <div class="feature-header">
+                        <div class="feature-info">
+                            <div class="feature-icon gradient-purple">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Comment Rewriter</h3>
+                                <p>Enhance your existing comments</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="commentRewriterEnabled" data-testid="toggle-comment-rewriter">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="tag tag-purple">Inline Editor</span>
+                        <span class="tag tag-pink">Tone Shift</span>
+                    </div>
+                </div>
+
+                <!-- Inbox Smart Replies -->
+                <div class="feature-card" data-testid="feature-inbox-replies">
+                    <div class="feature-header">
+                        <div class="feature-info">
+                            <div class="feature-icon gradient-blue">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Inbox Smart Replies</h3>
+                                <p>AI-powered message responses</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="inboxRepliesEnabled" checked data-testid="toggle-inbox-replies">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="tag tag-blue">Context Analysis</span>
+                        <span class="tag tag-indigo">Smart Categorization</span>
+                    </div>
+                </div>
+
+                <!-- Rewrite Anywhere -->
+                <div class="feature-card" data-testid="feature-rewrite-anywhere">
+                    <div class="feature-header">
+                        <div class="feature-info">
+                            <div class="feature-icon gradient-emerald">
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Rewrite Anywhere</h3>
+                                <p>Universal text enhancement</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="rewriteAnywhereEnabled" checked data-testid="toggle-rewrite-anywhere">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="tag tag-emerald">Floating Button</span>
+                        <span class="tag tag-teal">Multi-Variants</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Features -->
+            <div class="advanced-section" data-testid="advanced-features">
+                <h2 class="section-title"><i class="fas fa-sparkles"></i> Advanced Tools</h2>
+                <div class="mini-features-grid">
+                    <div class="mini-feature-card" data-testid="mini-feature-hashtag">
+                        <div class="mini-feature-icon gradient-orange">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <h4>Hashtag Generator</h4>
+                        <label class="mini-toggle-switch">
+                            <input type="checkbox" id="hashtagGeneratorEnabled" data-testid="toggle-hashtag-generator">
+                            <span class="mini-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="mini-feature-card" data-testid="mini-feature-engagement">
+                        <div class="mini-feature-icon gradient-green">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Engagement Boost</h4>
+                        <label class="mini-toggle-switch">
+                            <input type="checkbox" id="engagementBoostEnabled" checked data-testid="toggle-engagement-boost">
+                            <span class="mini-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="mini-feature-card" data-testid="mini-feature-summarizer">
+                        <div class="mini-feature-icon gradient-purple-pink">
+                            <i class="fas fa-compress-alt"></i>
+                        </div>
+                        <h4>Auto Summarizer</h4>
+                        <label class="mini-toggle-switch">
+                            <input type="checkbox" id="autoSummarizerEnabled" data-testid="toggle-auto-summarizer">
+                            <span class="mini-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="mini-feature-card" data-testid="mini-feature-translation">
+                        <div class="mini-feature-icon gradient-indigo">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h4>Translation</h4>
+                        <label class="mini-toggle-switch">
+                            <input type="checkbox" id="translationEnabled" data-testid="toggle-translation">
+                            <span class="mini-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Statistics -->
+            <div class="stats-card" data-testid="usage-stats">
+                <h3 class="stats-title"><i class="fas fa-chart-pie"></i> Usage Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value primary" data-testid="text-posts-generated">0</div>
+                        <div class="stat-label">Posts Generated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value accent" data-testid="text-comments-assisted">0</div>
+                        <div class="stat-label">Comments Assisted</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value purple" data-testid="text-messages-replied">0</div>
+                        <div class="stat-label">Messages Replied</div>
+                    </div>
+                </div>
+                <div class="usage-progress">
+                    <div class="progress-header">
+                        <span>This Month Usage</span>
+                        <span class="progress-text" data-testid="text-monthly-usage">0 / 500</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-testid="progress-usage"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons" data-testid="action-buttons">
+                <button class="btn btn-primary btn-save" data-testid="button-save-settings">
+                    <i class="fas fa-save"></i>
+                    <span>Save Settings</span>
+                </button>
+                <button class="btn btn-secondary" data-testid="button-help">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="btn btn-accent" data-testid="button-feedback">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer" data-testid="footer">
+            <div class="footer-content">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Extension Active</span>
+                </div>
+                <div class="footer-links">
+                    <span>v2.1.0</span>
+                    <button class="footer-link" data-testid="button-privacy">Privacy</button>
+                    <button class="footer-link upgrade" data-testid="button-upgrade">Upgrade Pro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
