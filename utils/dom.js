@@ -15,13 +15,13 @@ class DOMService {
             commentThreads: '.comments-comment-item, .comment',
             
             // Messaging/Inbox
-            messageComposer: '.msg-form__contenteditable, .compose-form__message-texteditor .ql-editor, [data-placeholder*="Write a message"]',
+            messageComposer: '.msg-form__contenteditable, .msg-form__msg-content-container [contenteditable="true"], .compose-form__message-texteditor .ql-editor, .msg-form__textarea, [data-placeholder*="Write a message"], .msg-overlay-bubble-header [contenteditable="true"]',
             messageSubmitButton: '.msg-form__send-button, .compose-form__send-button',
             conversationList: '.msg-conversation-listitem, .conversation-item',
             messageThread: '.msg-s-message-list-content, .message-thread',
             
             // General text areas
-            editableElements: '[contenteditable="true"], textarea, input[type="text"]',
+            editableElements: '[contenteditable="true"], textarea, input[type="text"], .ql-editor',
             
             // Post content
             postContent: '.feed-shared-text, .feed-shared-update-v2__description, article .break-words',
@@ -122,8 +122,25 @@ class DOMService {
         }
         
         if (element.contentEditable === 'true') {
-            element.textContent = text;
-            element.dispatchEvent(new Event('input', { bubbles: true }));
+            // Use innerHTML to preserve rich-editor expectations (Quill/LinkedIn)
+            const escaped = this._escapeHtml(text || '');
+            // Wrap in <p> so editors that expect block children (Quill) behave correctly
+            const html = escaped.split(/\r?\n/).map(line => `<p>${line || '<br>'}</p>`).join('');
+            element.innerHTML = html;
+
+            // Place caret at the end
+            try {
+                element.focus();
+                const range = document.createRange();
+                range.selectNodeContents(element);
+                range.collapse(false);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } catch (e) {}
+
+            // Dispatch events LinkedIn may listen for
+            this._triggerInputEvents(element);
             return true;
         }
         
@@ -146,20 +163,73 @@ class DOMService {
         }
         
         if (element.contentEditable === 'true') {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                range.deleteContents();
-                range.insertNode(document.createTextNode(text));
-                range.collapse(false);
-                selection.removeAllRanges();
-                selection.addRange(range);
-                element.dispatchEvent(new Event('input', { bubbles: true }));
-                return true;
+            try {
+                // Prefer execCommand where available for better editor integration
+                const successful = document.execCommand && document.execCommand('insertText', false, text);
+                if (!successful) {
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        const node = document.createTextNode(text);
+                        range.insertNode(node);
+                        // Move caret after inserted node
+                        range.setStartAfter(node);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+            } catch (e) {
+                // fallback insertion
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(document.createTextNode(text));
+                    range.collapse(false);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
             }
+
+            // Trigger events so LinkedIn updates send-button state and styles
+            element.focus();
+            this._triggerInputEvents(element);
+            return true;
         }
         
         return false;
+    }
+
+    // Internal helper: escape HTML
+    _escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Trigger a set of events that most editors listen for to update UI and internal state
+    _triggerInputEvents(element) {
+        try {
+            element.dispatchEvent(new Event('focus', { bubbles: true }));
+            element.dispatchEvent(new Event('input', { bubbles: true }));
+            element.dispatchEvent(new Event('change', { bubbles: true }));
+            // Composition events
+            element.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+            element.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
+
+            // Simulate key events to nudge UI (some handlers only run on key events)
+            const kd = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'a' });
+            const ku = new KeyboardEvent('keyup', { bubbles: true, cancelable: true, key: 'a' });
+            element.dispatchEvent(kd);
+            element.dispatchEvent(ku);
+        } catch (e) {
+            try { element.dispatchEvent(new Event('input', { bubbles: true })); } catch (e2) {}
+        }
     }
 
     // Create floating button
@@ -200,6 +270,90 @@ class DOMService {
         });
         
         return button;
+    }
+
+    // --- Branded writing indicator helper ---
+    // Shows a small branded writing animation near a target element or inside a container.
+    showWritingIndicator(targetOrContainer, options = {}) {
+        try {
+            const container = (targetOrContainer && targetOrContainer.appendChild) ? targetOrContainer : (targetOrContainer || document.body);
+            // If a node already exists for this container, return it
+            if (!container._aiWritingIndicator) {
+                const holder = document.createElement('div');
+                holder.className = 'ai-writing-modern';
+                holder.style.cssText = options.inline ? 'display:inline-flex;align-items:center;gap:8px;' : 'display:flex;align-items:center;gap:12px;';
+
+                holder.innerHTML = `
+                    <svg class="ai-writing-svg" viewBox="0 0 64 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMinYMid meet">
+                        <defs>
+                            <linearGradient id="ai-gradient" x1="0%" x2="100%">
+                                <stop offset="0%" stop-color="#00A0DC" />
+                                <stop offset="50%" stop-color="#0077B5" />
+                                <stop offset="100%" stop-color="#8B5CF6" />
+                            </linearGradient>
+                        </defs>
+                        <path class="ai-writing-glow" d="M6 18 C18 6, 34 6, 58 18" />
+                        <path class="ai-writing-path" d="M6 18 C18 6, 34 6, 58 18" />
+                        <circle class="ai-writing-dot" cx="6" cy="18" r="2.6" />
+                    </svg>
+                    <div class="ai-writing-text-placeholder" aria-hidden="true"></div>
+                `;
+
+                // Position holder if requested
+                if (options.position === 'absolute' && targetOrContainer && targetOrContainer.getBoundingClientRect) {
+                    const rect = targetOrContainer.getBoundingClientRect();
+                    holder.style.position = 'absolute';
+                    holder.style.left = (rect.left + window.scrollX) + 'px';
+                    holder.style.top = (rect.top + window.scrollY - 36) + 'px';
+                    holder.style.zIndex = options.zIndex || 10005;
+                    document.body.appendChild(holder);
+                } else if (options.insert === 'before' && targetOrContainer && targetOrContainer.parentElement) {
+                    targetOrContainer.parentElement.insertBefore(holder, targetOrContainer);
+                } else if (options.insert === 'after' && targetOrContainer && targetOrContainer.parentElement) {
+                    targetOrContainer.parentElement.insertBefore(holder, targetOrContainer.nextSibling);
+                } else {
+                    // If the container has overflow:hidden (common with dropdowns), ensure holder won't be clipped
+                    try {
+                        const computed = window.getComputedStyle(container);
+                        if (computed && computed.overflow && (computed.overflow === 'hidden' || computed.overflow === 'clip')) {
+                            // prefer appending directly to container (dropdown) but make it positioned relative and allow visible overflow
+                            container.style.overflow = 'visible';
+                        }
+                    } catch (e) {}
+
+                    // If inline option requested and the container is block-level, make the holder stretch to full width so svg scales
+                    if (options.inline) {
+                        holder.style.width = '100%';
+                        holder.style.display = 'flex';
+                        holder.style.justifyContent = 'center';
+                    }
+
+                    container.appendChild(holder);
+                }
+
+                container._aiWritingIndicator = holder;
+            }
+
+            return container._aiWritingIndicator;
+        } catch (e) {
+            logWarn('showWritingIndicator error', e);
+            return null;
+        }
+    }
+
+    hideWritingIndicator(targetOrContainer) {
+        try {
+            const container = (targetOrContainer && targetOrContainer.appendChild) ? targetOrContainer : (targetOrContainer || document.body);
+            const node = container._aiWritingIndicator;
+            if (node) {
+                if (node.parentElement) node.parentElement.removeChild(node);
+                container._aiWritingIndicator = null;
+            }
+            return true;
+        } catch (e) {
+            logWarn('hideWritingIndicator error', e);
+            return false;
+        }
     }
 
     // Create suggestion dropdown

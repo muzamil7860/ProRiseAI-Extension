@@ -1,16 +1,24 @@
 // LinkedIn AI Assistant Popup JavaScript
 // Handles popup interface functionality, settings management, and extension state
 
+// Debug logging (set to false in production)
+const DEBUG = false;
+const log = (...args) => DEBUG && log(...args);
+const logError = (...args) => DEBUG && logError(...args);
+
 class PopupManager {
     constructor() {
         this.settings = {};
         this.stats = {
             postsGenerated: 0,
             commentsAssisted: 0,
+            repliesAssisted: 0,
             messagesReplied: 0,
+            rewritesGenerated: 0,
             monthlyUsage: 0,
             monthlyLimit: 500
         };
+        this.currentPeriod = 'today';
         
         this.init();
     }
@@ -25,7 +33,10 @@ class PopupManager {
     async loadSettings() {
         try {
             const result = await chrome.storage.sync.get([
+                'openaiApiKey',
                 'globalTone',
+                'commentLength',
+                'replyLength',
                 'postCreatorEnabled',
                 'commentSuggestionsEnabled',
                 'commentRewriterEnabled',
@@ -34,11 +45,20 @@ class PopupManager {
                 'hashtagGeneratorEnabled',
                 'engagementBoostEnabled',
                 'autoSummarizerEnabled',
-                'translationEnabled'
+                'translationEnabled',
+                // keyword alerts
+                'keywordAlertsEnabled', 'keywordList', 'alertSoundEnabled',
+                // background crawler
+                'backgroundScanEnabled', 'crawlIntervalSec',
+                // WhatsApp
+                'whatsappAlertsEnabled', 'whatsappPhone'
             ]);
 
             this.settings = {
+                openaiApiKey: result.openaiApiKey || '',
                 globalTone: result.globalTone || 'professional',
+                commentLength: result.commentLength || 'medium',
+                replyLength: result.replyLength || 'short',
                 postCreatorEnabled: result.postCreatorEnabled !== false,
                 commentSuggestionsEnabled: result.commentSuggestionsEnabled !== false,
                 commentRewriterEnabled: result.commentRewriterEnabled || false,
@@ -47,10 +67,20 @@ class PopupManager {
                 hashtagGeneratorEnabled: result.hashtagGeneratorEnabled || false,
                 engagementBoostEnabled: result.engagementBoostEnabled !== false,
                 autoSummarizerEnabled: result.autoSummarizerEnabled || false,
-                translationEnabled: result.translationEnabled || false
+                translationEnabled: result.translationEnabled || false,
+                // keyword alerts
+                keywordAlertsEnabled: result.keywordAlertsEnabled !== false,
+                keywordList: Array.isArray(result.keywordList) ? result.keywordList : ['developer','wordpress'],
+                alertSoundEnabled: result.alertSoundEnabled !== false,
+                // background crawler
+                backgroundScanEnabled: result.backgroundScanEnabled !== false,
+                crawlIntervalSec: Number(result.crawlIntervalSec || 60),
+                // WhatsApp
+                whatsappAlertsEnabled: !!result.whatsappAlertsEnabled,
+                whatsappPhone: result.whatsappPhone || ''
             };
         } catch (error) {
-            console.error('Error loading settings:', error);
+            logError('Error loading settings:', error);
         }
     }
 
@@ -59,28 +89,142 @@ class PopupManager {
             const result = await chrome.storage.local.get([
                 'postsGenerated',
                 'commentsAssisted',
+                'repliesAssisted',
                 'messagesReplied',
-                'monthlyUsage'
+                'rewritesGenerated',
+                'monthlyUsage',
+                'statsHistory'
             ]);
 
             this.stats = {
                 postsGenerated: result.postsGenerated || 0,
                 commentsAssisted: result.commentsAssisted || 0,
+                repliesAssisted: result.repliesAssisted || 0,
                 messagesReplied: result.messagesReplied || 0,
+                rewritesGenerated: result.rewritesGenerated || 0,
                 monthlyUsage: result.monthlyUsage || 0,
                 monthlyLimit: 500
             };
+            
+            this.statsHistory = result.statsHistory || this.initStatsHistory();
         } catch (error) {
-            console.error('Error loading stats:', error);
+            logError('Error loading stats:', error);
+        }
+    }
+
+    initStatsHistory() {
+        const today = new Date().toDateString();
+        return {
+            daily: { [today]: { posts: 0, comments: 0, replies: 0, messages: 0, rewrites: 0 } },
+            weekly: {},
+            monthly: {}
+        };
+    }
+
+    getStatsForPeriod(period) {
+        const now = new Date();
+        const today = now.toDateString();
+        
+        if (period === 'today') {
+            return this.statsHistory.daily[today] || { posts: 0, comments: 0, replies: 0, messages: 0, rewrites: 0 };
+        } else if (period === 'week') {
+            // Sum last 7 days
+            let stats = { posts: 0, comments: 0, replies: 0, messages: 0, rewrites: 0 };
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                const dayKey = date.toDateString();
+                const dayStats = this.statsHistory.daily[dayKey];
+                if (dayStats) {
+                    stats.posts += dayStats.posts || 0;
+                    stats.comments += dayStats.comments || 0;
+                    stats.replies += dayStats.replies || 0;
+                    stats.messages += dayStats.messages || 0;
+                    stats.rewrites += dayStats.rewrites || 0;
+                }
+            }
+            return stats;
+        } else if (period === 'month') {
+            // Sum last 30 days
+            let stats = { posts: 0, comments: 0, replies: 0, messages: 0, rewrites: 0 };
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                const dayKey = date.toDateString();
+                const dayStats = this.statsHistory.daily[dayKey];
+                if (dayStats) {
+                    stats.posts += dayStats.posts || 0;
+                    stats.comments += dayStats.comments || 0;
+                    stats.replies += dayStats.replies || 0;
+                    stats.messages += dayStats.messages || 0;
+                    stats.rewrites += dayStats.rewrites || 0;
+                }
+            }
+            return stats;
         }
     }
 
     setupEventListeners() {
+        // API Key toggle visibility
+        const toggleApiKeyBtn = document.getElementById('toggleApiKey');
+        const apiKeyInput = document.getElementById('openaiApiKey');
+        if (toggleApiKeyBtn && apiKeyInput) {
+            toggleApiKeyBtn.addEventListener('click', () => {
+                const isPassword = apiKeyInput.type === 'password';
+                apiKeyInput.type = isPassword ? 'text' : 'password';
+                toggleApiKeyBtn.querySelector('i').className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+            });
+        }
+
+        // API Key input
+        if (apiKeyInput) {
+            apiKeyInput.addEventListener('change', (e) => {
+                this.settings.openaiApiKey = e.target.value.trim();
+                this.saveSettings();
+            });
+        }
+
+        // Tab switching
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                this.switchTab(tabName);
+            });
+        });
+
+        // Time period filter
+        const timeButtons = document.querySelectorAll('.time-btn');
+        timeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const period = btn.dataset.period;
+                this.switchTimePeriod(period);
+            });
+        });
+
         // Global tone selector
         const globalToneSelect = document.getElementById('globalTone');
         if (globalToneSelect) {
             globalToneSelect.addEventListener('change', (e) => {
                 this.settings.globalTone = e.target.value;
+                this.saveSettings();
+            });
+        }
+
+        // Comment length selector
+        const commentLengthSelect = document.getElementById('commentLength');
+        if (commentLengthSelect) {
+            commentLengthSelect.addEventListener('change', (e) => {
+                this.settings.commentLength = e.target.value;
+                this.saveSettings();
+            });
+        }
+
+        // Reply length selector
+        const replyLengthSelect = document.getElementById('replyLength');
+        if (replyLengthSelect) {
+            replyLengthSelect.addEventListener('change', (e) => {
+                this.settings.replyLength = e.target.value;
                 this.saveSettings();
             });
         }
@@ -118,31 +262,88 @@ class PopupManager {
             });
         }
 
-        // Other buttons
+        // Help button
         const helpButton = document.querySelector('[data-testid="button-help"]');
         if (helpButton) {
             helpButton.addEventListener('click', () => this.showHelp());
         }
 
-        const feedbackButton = document.querySelector('[data-testid="button-feedback"]');
-        if (feedbackButton) {
-            feedbackButton.addEventListener('click', () => this.showFeedback());
-        }
-
+        // Privacy button
         const privacyButton = document.querySelector('[data-testid="button-privacy"]');
         if (privacyButton) {
             privacyButton.addEventListener('click', () => this.showPrivacy());
         }
 
+        // Upgrade button
         const upgradeButton = document.querySelector('[data-testid="button-upgrade"]');
         if (upgradeButton) {
             upgradeButton.addEventListener('click', () => this.showUpgrade());
         }
 
-        const settingsButton = document.querySelector('[data-testid="button-settings"]');
-        if (settingsButton) {
-            settingsButton.addEventListener('click', () => this.showSettings());
+        // Keyword Alerts UI handlers
+        const kwEnabled = document.getElementById('kw-enabled');
+        const kwSound = document.getElementById('kw-sound');
+        const kwList = document.getElementById('kw-list');
+        const bgEnabled = document.getElementById('bg-enabled');
+        const bgInterval = document.getElementById('bg-interval');
+        const kwSave = document.getElementById('kw-save');
+        const waEnabled = document.getElementById('wa-enabled');
+        const waPhone = document.getElementById('wa-phone');
+        const waTest = document.getElementById('wa-test');
+
+        if (kwSave) {
+            kwSave.addEventListener('click', async () => {
+                this.settings.keywordAlertsEnabled = !!kwEnabled.checked;
+                this.settings.alertSoundEnabled = !!kwSound.checked;
+                this.settings.keywordList = (kwList.value || '')
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(Boolean);
+                this.settings.backgroundScanEnabled = !!bgEnabled.checked;
+                this.settings.crawlIntervalSec = Math.max(30, Number(bgInterval.value || 60));
+                this.settings.whatsappAlertsEnabled = !!waEnabled.checked;
+                this.settings.whatsappPhone = (waPhone.value || '').replace(/\D/g, '');
+                await this.saveSettings();
+                this.notifyContentScript();
+                // Ask background to re-evaluate crawler
+                try { chrome.runtime.sendMessage({ action: 'settingsUpdated' }); } catch (e) {}
+                this.showSaveConfirmation(kwSave);
+            });
         }
+
+        if (waTest) {
+            waTest.addEventListener('click', async () => {
+                const phone = (waPhone.value || '').replace(/\D/g, '');
+                if (!phone) { alert('Enter WhatsApp phone with country code'); return; }
+                try {
+                    await chrome.runtime.sendMessage({ action: 'testWhatsApp', phone });
+                } catch (e) {}
+            });
+        }
+    }
+
+    switchTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+
+        // Update tab panels
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+            panel.classList.toggle('active', panel.dataset.panel === tabName);
+        });
+    }
+
+    switchTimePeriod(period) {
+        this.currentPeriod = period;
+        
+        // Update time buttons
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.period === period);
+        });
+
+        // Update stats display
+        this.updateStats();
     }
 
     updateUI() {
@@ -152,9 +353,21 @@ class PopupManager {
             globalToneSelect.value = this.settings.globalTone;
         }
 
+        // Update comment length selector
+        const commentLengthSelect = document.getElementById('commentLength');
+        if (commentLengthSelect) {
+            commentLengthSelect.value = this.settings.commentLength;
+        }
+
+        // Update reply length selector
+        const replyLengthSelect = document.getElementById('replyLength');
+        if (replyLengthSelect) {
+            replyLengthSelect.value = this.settings.replyLength;
+        }
+
         // Update toggles
         Object.keys(this.settings).forEach(key => {
-            if (key !== 'globalTone') {
+            if (key !== 'globalTone' && key !== 'commentLength' && key !== 'replyLength') {
                 const toggle = document.getElementById(key);
                 if (toggle) {
                     toggle.checked = this.settings[key];
@@ -164,22 +377,56 @@ class PopupManager {
 
         // Update statistics
         this.updateStats();
+
+        // API Key input
+        const apiKeyInput = document.getElementById('openaiApiKey');
+        if (apiKeyInput) {
+            apiKeyInput.value = this.settings.openaiApiKey || '';
+        }
+
+        // Keyword Alerts UI values
+        const kwEnabled = document.getElementById('kw-enabled');
+        const kwSound = document.getElementById('kw-sound');
+        const kwList = document.getElementById('kw-list');
+        const bgEnabled = document.getElementById('bg-enabled');
+        const bgInterval = document.getElementById('bg-interval');
+        if (kwEnabled) kwEnabled.checked = !!this.settings.keywordAlertsEnabled;
+        if (kwSound) kwSound.checked = !!this.settings.alertSoundEnabled;
+        if (kwList) kwList.value = (this.settings.keywordList || []).join(', ');
+        if (bgEnabled) bgEnabled.checked = !!this.settings.backgroundScanEnabled;
+        if (bgInterval) bgInterval.value = this.settings.crawlIntervalSec || 60;
+        const waEnabled = document.getElementById('wa-enabled');
+        const waPhone = document.getElementById('wa-phone');
+        if (waEnabled) waEnabled.checked = !!this.settings.whatsappAlertsEnabled;
+        if (waPhone) waPhone.value = this.settings.whatsappPhone || '';
     }
 
     updateStats() {
+        const stats = this.getStatsForPeriod(this.currentPeriod);
+
         const postsElement = document.querySelector('[data-testid="text-posts-generated"]');
         if (postsElement) {
-            postsElement.textContent = this.stats.postsGenerated;
+            postsElement.textContent = stats.posts || 0;
         }
 
         const commentsElement = document.querySelector('[data-testid="text-comments-assisted"]');
         if (commentsElement) {
-            commentsElement.textContent = this.stats.commentsAssisted;
+            commentsElement.textContent = stats.comments || 0;
+        }
+
+        const repliesElement = document.querySelector('[data-testid="text-replies-assisted"]');
+        if (repliesElement) {
+            repliesElement.textContent = stats.replies || 0;
         }
 
         const messagesElement = document.querySelector('[data-testid="text-messages-replied"]');
         if (messagesElement) {
-            messagesElement.textContent = this.stats.messagesReplied;
+            messagesElement.textContent = stats.messages || 0;
+        }
+
+        const rewritesElement = document.querySelector('[data-testid="text-rewrites-generated"]');
+        if (rewritesElement) {
+            rewritesElement.textContent = stats.rewrites || 0;
         }
 
         const monthlyUsageElement = document.querySelector('[data-testid="text-monthly-usage"]');
@@ -197,181 +444,97 @@ class PopupManager {
     async saveSettings() {
         try {
             await chrome.storage.sync.set(this.settings);
-            console.log('Settings saved:', this.settings);
         } catch (error) {
-            console.error('Error saving settings:', error);
+            logError('Error saving settings:', error);
         }
     }
 
-    async notifyContentScript() {
-        try {
-            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (tab && tab.url.includes('linkedin.com')) {
-                chrome.tabs.sendMessage(tab.id, {
+    notifyContentScript() {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]) {
+                chrome.tabs.sendMessage(tabs[0].id, {
                     action: 'settingsUpdated',
                     settings: this.settings
+                }).catch(() => {
+                    // Ignore errors if content script not loaded
                 });
             }
-        } catch (error) {
-            console.error('Error notifying content script:', error);
-        }
+        });
     }
 
     showSaveConfirmation(button) {
-        const originalContent = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-check"></i><span>Saved!</span>';
-        button.classList.add('btn-accent');
-        button.classList.remove('btn-primary');
-
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> <span>Saved!</span>';
+        button.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        
         setTimeout(() => {
-            button.innerHTML = originalContent;
-            button.classList.remove('btn-accent');
-            button.classList.add('btn-primary');
+            button.innerHTML = originalText;
+            button.style.background = '';
         }, 2000);
     }
 
     showHelp() {
         const helpContent = `
-            <h3>LinkedIn AI Assistant Help</h3>
-            <p><strong>Keyboard Shortcuts:</strong></p>
-            <ul>
-                <li>Ctrl+Shift+S - Get AI suggestions</li>
-                <li>Ctrl+Shift+R - Rewrite current text</li>
-            </ul>
-            <p><strong>Features:</strong></p>
-            <ul>
-                <li><strong>AI Post Creator:</strong> Generates engaging LinkedIn posts with hooks and hashtags</li>
-                <li><strong>Comment Suggestions:</strong> Provides 3-5 relevant comment ideas for any post</li>
-                <li><strong>Comment Rewriter:</strong> Enhances your existing comments with better tone and clarity</li>
-                <li><strong>Inbox Smart Replies:</strong> Suggests professional responses for LinkedIn messages</li>
-                <li><strong>Rewrite Anywhere:</strong> Universal text enhancement tool for any editable field</li>
-            </ul>
-        `;
-        this.showModal('Help', helpContent);
-    }
+🤖 LinkedIn AI Assistant Help
 
-    showFeedback() {
-        chrome.tabs.create({
-            url: 'https://forms.gle/linkedin-ai-assistant-feedback'
-        });
+FEATURES:
+• Post Creator: Generate engaging posts
+• Comment Suggestions: Get smart comment ideas
+• Reply Suggestions: Quick replies to comments  
+• Inbox Assistant: Smart message responses
+• Rewrite Anywhere: Enhance any text
+
+KEYBOARD SHORTCUTS:
+• Ctrl+Shift+S: Get AI suggestions
+• Ctrl+Shift+R: Rewrite current text
+
+SETTINGS:
+• Configure tone, length, and features
+• Stats track your usage by day/week/month
+
+Need more help? Contact support!
+        `.trim();
+
+        alert(helpContent);
     }
 
     showPrivacy() {
-        chrome.tabs.create({
-            url: 'https://linkedin-ai-assistant.com/privacy'
-        });
+        const privacyInfo = `
+🔒 Privacy Policy
+
+Your privacy is important to us:
+
+• All AI processing is done via OpenAI API
+• No data is stored on our servers
+• Usage stats are stored locally only
+• API key is configured in extension
+• No tracking or analytics
+
+For full privacy policy, visit our website.
+        `.trim();
+
+        alert(privacyInfo);
     }
 
     showUpgrade() {
-        chrome.tabs.create({
-            url: 'https://linkedin-ai-assistant.com/upgrade'
-        });
-    }
+        const upgradeInfo = `
+✨ Upgrade to Pro
 
-    showSettings() {
-        chrome.runtime.openOptionsPage();
-    }
+Get unlimited access to:
+• Unlimited AI generations
+• Priority support
+• Advanced features
+• Custom tone presets
+• Team collaboration
 
-    showModal(title, content) {
-        // Create modal overlay
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        `;
+Coming soon! Stay tuned.
+        `.trim();
 
-        // Create modal content
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        `;
-
-        modal.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">${title}</h2>
-                <button style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;" id="closeModal">&times;</button>
-            </div>
-            <div style="color: #333; line-height: 1.6;">${content}</div>
-        `;
-
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-
-        // Close modal functionality
-        const closeModal = () => {
-            document.body.removeChild(overlay);
-        };
-
-        document.getElementById('closeModal').addEventListener('click', closeModal);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) closeModal();
-        });
-
-        // Close on ESC key
-        const handleKeyPress = (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                document.removeEventListener('keydown', handleKeyPress);
-            }
-        };
-        document.addEventListener('keydown', handleKeyPress);
-    }
-
-    // Listen for stats updates from content script
-    async listenForUpdates() {
-        chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-            if (message.action === 'updateStats') {
-                this.stats = { ...this.stats, ...message.stats };
-                this.updateStats();
-                this.saveStats();
-            }
-        });
-    }
-
-    async saveStats() {
-        try {
-            await chrome.storage.local.set({
-                postsGenerated: this.stats.postsGenerated,
-                commentsAssisted: this.stats.commentsAssisted,
-                messagesReplied: this.stats.messagesReplied,
-                monthlyUsage: this.stats.monthlyUsage
-            });
-        } catch (error) {
-            console.error('Error saving stats:', error);
-        }
+        alert(upgradeInfo);
     }
 }
 
-// Initialize popup when DOM is loaded
+// Initialize popup manager
 document.addEventListener('DOMContentLoaded', () => {
-    const popupManager = new PopupManager();
-    popupManager.listenForUpdates();
-});
-
-// Handle feature card hover effects
-document.addEventListener('DOMContentLoaded', () => {
-    const featureCards = document.querySelectorAll('.feature-card');
-    featureCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
+    new PopupManager();
 });

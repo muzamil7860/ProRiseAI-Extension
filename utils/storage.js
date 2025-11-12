@@ -13,7 +13,18 @@ class StorageService {
             hashtagGeneratorEnabled: false,
             engagementBoostEnabled: true,
             autoSummarizerEnabled: false,
-            translationEnabled: false
+            translationEnabled: false,
+            // Keyword alert feature
+            keywordAlertsEnabled: true,
+            keywordList: ['developer', 'wordpress'],
+            alertSoundEnabled: true
+            ,
+            // Background crawler
+            backgroundScanEnabled: true,
+            crawlIntervalSec: 60,
+            // WhatsApp alerts
+            whatsappAlertsEnabled: false,
+            whatsappPhone: ''
         };
     }
 

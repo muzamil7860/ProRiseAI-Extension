@@ -1,29 +1,67 @@
 // --------------------
 // API Utilities for LinkedIn AI Assistant
 // --------------------
+
+// Debug logging (set to false in production)
+const DEBUG = false;
+const log = (...args) => DEBUG && log(...args);
+const logError = (...args) => DEBUG && logError(...args);
+const logWarn = (...args) => DEBUG && logWarn(...args);
+
 class APIService {
     constructor() {
         this.requestTimeout = 1200000; // 20 minutes
     }
 
-    async sendMessage(action, data = {}) {
+    async sendMessage(action, data = {}, retries = 2) {
+        // Check if extension context is still valid
+        if (!chrome.runtime || !chrome.runtime.id) {
+            throw new Error('Extension needs to be reloaded. Please refresh the page.');
+        }
+
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error('Request timeout')), this.requestTimeout);
 
-            chrome.runtime.sendMessage({ action, ...data }, (response) => {
+            try {
+                chrome.runtime.sendMessage({ action, ...data }, async (response) => {
+                    clearTimeout(timeout);
+
+                    // Handle chrome.runtime.lastError
+                    if (chrome.runtime.lastError) {
+                        const errorMsg = chrome.runtime.lastError.message;
+                        
+                        // If extension context is invalidated and we have retries left
+                        if ((errorMsg.includes('Extension context invalidated') || 
+                             errorMsg.includes('Could not establish connection') ||
+                             errorMsg.includes('message port closed') ||
+                             errorMsg.includes('Receiving end does not exist')) && retries > 0) {
+                            
+                            // Wait a bit and retry
+                            setTimeout(async () => {
+                                try {
+                                    const result = await this.sendMessage(action, data, retries - 1);
+                                    resolve(result);
+                                } catch (retryError) {
+                                    reject(new Error('Extension connection lost. Please reload the page.'));
+                                }
+                            }, 500);
+                            return;
+                        }
+                        
+                        reject(new Error(errorMsg));
+                        return;
+                    }
+
+                    if (response && response.success) {
+                        resolve(response);
+                    } else {
+                        reject(new Error(response?.error || 'Unknown error occurred'));
+                    }
+                });
+            } catch (error) {
                 clearTimeout(timeout);
-
-                if (chrome.runtime.lastError) {
-                    reject(new Error(chrome.runtime.lastError.message));
-                    return;
-                }
-
-                if (response && response.success) {
-                    resolve(response);
-                } else {
-                    reject(new Error(response?.error || 'Unknown error occurred'));
-                }
-            });
+                reject(new Error('Extension communication error. Please reload the page.'));
+            }
         });
     }
 
@@ -32,7 +70,17 @@ class APIService {
             const response = await this.sendMessage('generateContent', { topic, tone, contentType });
             return response.content;
         } catch (error) {
-            console.error('Error generating content:', error);
+            logError('Error generating content:', error);
+            throw this.handleError(error);
+        }
+    }
+
+    async generateWithPrompt(prompt, tone = 'professional') {
+        try {
+            const response = await this.sendMessage('generateWithPrompt', { prompt, tone });
+            return response.content;
+        } catch (error) {
+            logError('Error generating with prompt:', error);
             throw this.handleError(error);
         }
     }
@@ -42,17 +90,27 @@ class APIService {
             const response = await this.sendMessage('rewriteText', { text, tone, instructions });
             return response.rewrittenText;
         } catch (error) {
-            console.error('Error rewriting text:', error);
+            logError('Error rewriting text:', error);
             throw this.handleError(error);
         }
     }
 
-    async generateCommentSuggestions(postContent, tone, authorName = '') {
+    async generateCommentSuggestions(postContent, tone, authorName = '', existingComments = [], commentLength = 'medium') {
         try {
-            const response = await this.sendMessage('generateCommentSuggestions', { postContent, tone, authorName });
+            const response = await this.sendMessage('generateCommentSuggestions', { postContent, tone, authorName, existingComments, commentLength });
             return response.suggestions;
         } catch (error) {
-            console.error('Error generating comment suggestions:', error);
+            logError('Error generating comment suggestions:', error);
+            throw this.handleError(error);
+        }
+    }
+
+    async generateReplySuggestions(postContent, parentComment, commentAuthor = '', tone = 'professional', replyLength = 'short') {
+        try {
+            const response = await this.sendMessage('generateReplySuggestions', { postContent, parentComment, commentAuthor, tone, replyLength });
+            return response.suggestions;
+        } catch (error) {
+            logError('Error generating reply suggestions:', error);
             throw this.handleError(error);
         }
     }
@@ -62,7 +120,39 @@ class APIService {
             const response = await this.sendMessage('generateInboxReply', { conversationHistory, tone, messageType });
             return response.replies;
         } catch (error) {
-            console.error('Error generating inbox reply:', error);
+            logError('Error generating inbox reply:', error);
+            throw this.handleError(error);
+        }
+    }
+
+    async generateInboxReplyMinimal(messages, tone, context) {
+        try {
+            const response = await this.sendMessage('generateInboxReplyMinimal', { messages, tone, context });
+            return response.reply;
+        } catch (error) {
+            logError('Error generating minimal inbox reply:', error);
+            throw this.handleError(error);
+        }
+    }
+
+    async generatePostMinimal(minimalPrompt) {
+        try {
+            const response = await this.sendMessage('generatePostMinimal', { minimalPrompt });
+            
+            // Handle different response formats
+            if (typeof response.post === 'string') {
+                return response.post;
+            } else if (response.post && typeof response.post === 'object') {
+                // If post is an object, try to extract text content
+                return response.post.post || response.post.content || response.post.text || response.post.fullPost || '[Unable to extract post content]';
+            } else if (typeof response === 'string') {
+                return response;
+            } else {
+                logWarn('Unexpected response format for generatePostMinimal:', response);
+                return '[Invalid response format]';
+            }
+        } catch (error) {
+            logError('Error generating minimal post:', error);
             throw this.handleError(error);
         }
     }
@@ -72,7 +162,7 @@ class APIService {
             const response = await this.sendMessage('generateHashtags', { content, industry });
             return response.hashtags;
         } catch (error) {
-            console.error('Error generating hashtags:', error);
+            logError('Error generating hashtags:', error);
             throw this.handleError(error);
         }
     }
@@ -82,7 +172,7 @@ class APIService {
             const response = await this.sendMessage('summarizeText', { text, maxLength });
             return response.summary;
         } catch (error) {
-            console.error('Error summarizing text:', error);
+            logError('Error summarizing text:', error);
             throw this.handleError(error);
         }
     }
@@ -92,7 +182,7 @@ class APIService {
             const response = await this.sendMessage('translateText', { text, targetLanguage, sourceLanguage });
             return response.translation;
         } catch (error) {
-            console.error('Error translating text:', error);
+            logError('Error translating text:', error);
             throw this.handleError(error);
         }
     }
@@ -101,13 +191,21 @@ class APIService {
         try {
             await this.sendMessage('updateStats', { statType });
         } catch (error) {
-            console.error('Error updating stats:', error);
+            logError('Error updating stats:', error);
             // Don't throw for stats updates
         }
     }
 
     handleError(error) {
         const message = error.message || '';
+
+        if (message.includes('Extension context invalidated') || 
+            message.includes('Extension needs to be reloaded') ||
+            message.includes('Extension connection lost') ||
+            message.includes('message port closed') ||
+            message.includes('Receiving end does not exist')) {
+            return new Error('⚠️ Extension reloaded. Please refresh this page to continue.');
+        }
 
         if (message.includes('API key')) {
             return new Error('Please configure your OpenAI API key in the extension settings.');

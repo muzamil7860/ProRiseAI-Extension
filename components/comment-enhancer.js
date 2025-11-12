@@ -26,7 +26,6 @@ class AICommentEnhancer {
 
     async attachToCommentBox(commentElement) {
         if (this.attachedCommentBoxes.has(commentElement)) return;
-
         this.attachedCommentBoxes.add(commentElement);
 
         if (this.settings.commentSuggestionsEnabled) this.addSuggestionsButton(commentElement);
@@ -35,16 +34,41 @@ class AICommentEnhancer {
     }
 
     addSuggestionsButton(commentElement) {
-        const suggestionsBtn = this.createSuggestionsButton();
-        this.positionButton(suggestionsBtn, commentElement, 'suggestions');
+        // Wait a bit for the .ql-editor to be added
+        setTimeout(() => {
+            const container = commentElement.closest('.comments-comment-box, .comments-comment-texteditor');
+            if (!container) return;
 
-        suggestionsBtn.addEventListener('click', e => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.showCommentSuggestions(commentElement);
-        });
+            // Check if this is a reply box by looking for "reply" in placeholder
+            const editor = container.querySelector('.ql-editor[data-placeholder]');
+            const placeholder = editor?.getAttribute('data-placeholder') || '';
+            const isReply = placeholder.toLowerCase().includes('reply');
 
-        this.insertButton(suggestionsBtn, commentElement);
+            console.log('[Comment Enhancer] Placeholder:', placeholder, 'Is reply?', isReply);
+
+            if (isReply) {
+                console.log('[Comment Enhancer] ⚠️ Skipping reply box');
+                return;
+            }
+
+            // Check if button already exists inside the container or immediately after it (we insert below)
+            const nextSibling = container.nextElementSibling;
+            const existingBtn = container.querySelector('.ai-comment-suggestions-btn') || (nextSibling && nextSibling.classList && nextSibling.classList.contains('ai-comment-suggestions-btn') ? nextSibling : null);
+            if (existingBtn) return;
+
+            console.log('[Comment Enhancer] ✅ Adding button to MAIN COMMENT box');
+
+            const suggestionsBtn = this.createSuggestionsButton();
+            this.positionButton(suggestionsBtn, commentElement, 'suggestions');
+
+            suggestionsBtn.addEventListener('click', e => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.showCommentSuggestions(commentElement);
+            });
+
+            this.insertButton(suggestionsBtn, commentElement);
+        }, 200);
     }
 
     addRewriteButton(commentElement) {
@@ -64,9 +88,9 @@ class AICommentEnhancer {
     createSuggestionsButton() {
         const button = document.createElement('button');
         button.className = 'ai-comment-suggestions-btn';
-        button.innerHTML = '💡 Suggestions';
+        button.innerHTML = '💡 Comment Ideas';
         button.type = 'button';
-        button.title = 'Get AI comment suggestions';
+        button.title = 'Get AI comment suggestions for this post';
         button.style.cssText = `
             position: absolute;
             background: linear-gradient(135deg, #22C55E, #16A34A);
@@ -131,8 +155,14 @@ class AICommentEnhancer {
         if (container) {
             container.style.position = 'relative';
             if (type === 'suggestions') {
-                button.style.top = '8px';
-                button.style.right = '8px';
+                // mark suggestion button to be inserted below the input (outside the box)
+                button.dataset.position = 'below';
+                // reset absolute positioning so it flows normally when inserted after container
+                button.style.position = 'relative';
+                button.style.top = 'auto';
+                button.style.right = 'auto';
+                button.style.marginTop = '8px';
+                button.style.marginLeft = '0';
             } else if (type === 'rewrite') {
                 button.style.top = '8px';
                 button.style.right = '90px';
@@ -142,7 +172,22 @@ class AICommentEnhancer {
 
     insertButton(button, commentElement) {
         const container = commentElement.closest('.comments-comment-box, .comments-comment-texteditor') || commentElement.parentElement;
-        if (container) container.appendChild(button);
+        if (!container) return;
+        // If the button is marked to sit below the input, insert it after the container so it doesn't overlap the composer controls
+        if (button.dataset && button.dataset.position === 'below') {
+            const parent = container.parentNode || container;
+            if (parent && parent.insertBefore) {
+                parent.insertBefore(button, container.nextSibling);
+                // align right so it appears below the input on the right side
+                button.style.float = 'right';
+                button.style.marginTop = button.style.marginTop || '8px';
+                button.style.marginRight = '8px';
+            } else {
+                container.appendChild(button);
+            }
+        } else {
+            container.appendChild(button);
+        }
     }
 
     monitorTextChanges(commentElement) {
@@ -162,44 +207,63 @@ class AICommentEnhancer {
     async showCommentSuggestions(commentElement) {
         const postContent = this.extractPostContent(commentElement);
         const authorName = this.extractAuthorName(commentElement);
+        const existingComments = this.extractExistingComments(commentElement);
 
         if (!postContent) {
             AIAssistantAPI.showError(new Error('Could not find post content to analyze'), commentElement.parentElement);
             return;
         }
 
+        // Get comment length setting from storage
+        const result = await chrome.storage.sync.get(['commentLength']);
+        const commentLength = result.commentLength || 'medium';
+
         const suggestionsBtn = commentElement.parentElement?.querySelector('.ai-comment-suggestions-btn');
         if (suggestionsBtn) {
-            suggestionsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            suggestionsBtn.innerHTML = '<span class="ai-post-spinner"></span> Loading...';
             suggestionsBtn.disabled = true;
         }
+
+    // Show dropdown IMMEDIATELY with loading state (indicator inside the dropdown)
+    this.showLoadingDropdown(commentElement);
 
         try {
             const suggestionsResponse = await AIAssistantAPI.generateCommentSuggestions(
                 postContent, 
                 this.settings.globalTone, 
-                authorName
+                authorName,
+                existingComments,
+                commentLength
             );
 
             let suggestions = [];
             if (suggestionsResponse) {
-                if (Array.isArray(suggestionsResponse)) suggestions = suggestionsResponse;
-                else if (Array.isArray(suggestionsResponse.suggestions)) suggestions = suggestionsResponse.suggestions;
+                if (Array.isArray(suggestionsResponse)) {
+                    suggestions = suggestionsResponse;
+                } else if (suggestionsResponse.suggestions && Array.isArray(suggestionsResponse.suggestions)) {
+                    suggestions = suggestionsResponse.suggestions;
+                }
             }
 
             if (suggestions.length > 0) {
+                suggestions = this.validateSuggestions(suggestions, authorName);
                 this.showSuggestionsDropdown(commentElement, suggestions);
                 await AIAssistantAPI.updateStats('commentsAssisted');
             } else {
-                AIAssistantAPI.showError(new Error('No suggestions returned'), commentElement.parentElement);
+                this.removeLoadingDropdown(commentElement);
+                try { AIAssistantDOM.hideWritingIndicator(commentElement.parentElement || commentElement); } catch (e) {}
+                AIAssistantAPI.showError(new Error('No suggestions generated. Please try again.'), commentElement.parentElement);
             }
         } catch (error) {
             console.error('Error generating comment suggestions:', error);
+            this.removeLoadingDropdown(commentElement);
+            try { AIAssistantDOM.hideWritingIndicator(commentElement.parentElement || commentElement); } catch (e) {}
             AIAssistantAPI.showError(error, commentElement.parentElement);
         } finally {
             if (suggestionsBtn) {
-                suggestionsBtn.innerHTML = '💡 Suggestions';
+                suggestionsBtn.innerHTML = '💡 Comment Ideas';
                 suggestionsBtn.disabled = false;
+                try { AIAssistantDOM.hideWritingIndicator(commentElement.parentElement || commentElement); } catch (e) {}
             }
         }
     }
@@ -209,39 +273,43 @@ class AICommentEnhancer {
         if (existingDropdown) existingDropdown.remove();
 
         const dropdown = document.createElement('div');
-        dropdown.className = 'ai-comment-suggestions-dropdown';
+        // reuse panel branding classes so it shares visual style with the post creator
+        dropdown.className = 'ai-comment-suggestions-dropdown ai-post-panel modern';
         dropdown.style.cssText = `
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             z-index: 10000;
-            max-height: 400px;
+            max-height: 60vh;
             overflow-y: auto;
-            margin-top: 4px;
+            margin-top: 6px;
+            box-sizing: border-box;
         `;
 
-        // Header
+        // Branded header with handle
         const header = document.createElement('div');
-        header.style.cssText = `
-            padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
-            font-weight: 600;
-            font-size: 14px;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        header.className = 'ai-post-header';
+        header.innerHTML = `
+            <div class="ai-post-title">
+                <div class="ai-title-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z"/></svg>
+                </div>
+                <div class="ai-title-content">
+                    <span class="ai-title-main">AI Comment Suggestions</span>
+                    <span class="ai-title-sub">Powered by Muzamil Attiq</span>
+                </div>
+            </div>
+            <button class="ai-post-close" title="Close"> 
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/></svg>
+            </button>
         `;
-        header.innerHTML = `<span>💡 Comment Suggestions</span>
-                            <button style="background:none;border:none;font-size:18px;cursor:pointer;color:#666;">&times;</button>`;
-        header.querySelector('button').addEventListener('click', () => dropdown.remove());
+        // insert a visual handle above the header
+        const handle = document.createElement('div');
+        handle.className = 'ai-panel-handle';
+        dropdown.appendChild(handle);
         dropdown.appendChild(header);
+        header.querySelector('.ai-post-close').addEventListener('click', () => dropdown.remove());
 
         suggestions.forEach((suggestion, index) => {
             dropdown.appendChild(this.createSuggestionItem(suggestion, index, commentElement));
@@ -320,7 +388,7 @@ class AICommentEnhancer {
         }
 
         const rewriteBtn = commentElement.parentElement?.querySelector('.ai-comment-rewrite-btn');
-        if (rewriteBtn) { rewriteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; rewriteBtn.disabled = true; }
+    if (rewriteBtn) { rewriteBtn.innerHTML = '<span class="ai-post-spinner"></span>'; rewriteBtn.disabled = true; }
 
         try {
             const rewrittenContent = await AIAssistantAPI.rewriteText(currentText, this.settings.globalTone, 'Improve for LinkedIn comment engagement');
@@ -352,11 +420,20 @@ class AICommentEnhancer {
     }
 
     insertSuggestion(commentElement, suggestionText) {
-        AIAssistantDOM.setEditableText(commentElement, suggestionText);
-        commentElement.focus();
+        // Find the specific editor within this comment box
+        const editor = commentElement.querySelector('.ql-editor');
+        if (editor) {
+            AIAssistantDOM.setEditableText(editor, suggestionText);
+            editor.focus();
+        } else {
+            // Fallback to the comment element itself
+            AIAssistantDOM.setEditableText(commentElement, suggestionText);
+            commentElement.focus();
+        }
+        
         const dropdown = this.activeSuggestions.get(commentElement);
         if (dropdown) { dropdown.remove(); this.activeSuggestions.delete(commentElement); }
-        AIAssistantAPI.showSuccess('Suggestion inserted!', commentElement.parentElement);
+        AIAssistantAPI.showSuccess('Comment inserted!', commentElement.parentElement);
     }
 
     extractPostContent(commentElement) {
@@ -379,6 +456,139 @@ class AICommentEnhancer {
             if (el) return el.textContent.trim();
         }
         return '';
+    }
+
+    extractExistingComments(commentElement) {
+        const postContainer = commentElement.closest('article, .feed-shared-update-v2, [data-urn]');
+        if (!postContainer) return [];
+        
+        const comments = [];
+        const commentSelectors = [
+            '.comments-comment-item__main-content',
+            '.comments-comment-item .comments-comment-item-content-body',
+            '.comment-item__content'
+        ];
+        
+        for (const selector of commentSelectors) {
+            const commentElements = postContainer.querySelectorAll(selector);
+            commentElements.forEach(el => {
+                const text = el.textContent.trim();
+                if (text && text.length > 10 && text.length < 300) {
+                    comments.push(text);
+                }
+            });
+            if (comments.length > 0) break;
+        }
+        
+        return comments.slice(0, 5);
+    }
+
+    showLoadingDropdown(commentElement) {
+        const existingDropdown = document.querySelector('.ai-comment-suggestions-dropdown');
+        if (existingDropdown) existingDropdown.remove();
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'ai-comment-suggestions-dropdown ai-post-panel modern ai-loading-dropdown';
+        dropdown.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            margin-top: 6px;
+            max-height: 40vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        `;
+
+        // branded loading header + handle
+        const handle = document.createElement('div');
+        handle.className = 'ai-panel-handle';
+        dropdown.appendChild(handle);
+
+        const header = document.createElement('div');
+        header.className = 'ai-post-header';
+        header.innerHTML = `
+            <div class="ai-post-title">
+                <div class="ai-title-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z"/></svg>
+                </div>
+                <div class="ai-title-content">
+                    <span class="ai-title-main">AI Comment Suggestions</span>
+                    <span class="ai-title-sub">Generating...</span>
+                </div>
+            </div>
+        `;
+        dropdown.appendChild(header);
+
+    const loadingBody = document.createElement('div');
+    loadingBody.className = 'ai-loading-body';
+    loadingBody.style.cssText = 'padding:24px; display:flex; flex-direction:column; align-items:center; gap:12px; overflow:visible;';
+        // Message text
+        const msg = document.createElement('div');
+        msg.style.cssText = 'font-size:14px;color:#666;font-weight:600;';
+        msg.textContent = 'Generating smart comments...';
+        loadingBody.appendChild(msg);
+
+        // Show the branded writing indicator inside the loading body
+        try {
+            AIAssistantDOM.showWritingIndicator(loadingBody, { inline: true });
+        } catch (e) {
+            // fallback: add basic spinner
+            const fallback = document.createElement('div');
+            fallback.style.cssText = 'width:36px;height:36px;border:4px solid #f3f3f3;border-top-color:#22c55e;border-radius:50%;animation:spin 0.9s linear infinite;margin-bottom:6px;';
+            loadingBody.insertBefore(fallback, msg);
+        }
+
+        dropdown.appendChild(loadingBody);
+
+        const container = commentElement.closest('.comments-comment-box, .comments-comment-texteditor');
+        if (container) {
+            container.style.position = 'relative';
+            container.appendChild(dropdown);
+        }
+
+        this.activeSuggestions.set(commentElement, dropdown);
+    }
+
+    removeLoadingDropdown(commentElement) {
+        const dropdown = this.activeSuggestions.get(commentElement);
+        if (dropdown && dropdown.classList.contains('ai-loading-dropdown')) {
+            try { AIAssistantDOM.hideWritingIndicator(dropdown); } catch (e) {}
+            dropdown.remove();
+            this.activeSuggestions.delete(commentElement);
+        }
+    }
+
+    validateSuggestions(suggestions, authorName) {
+        return suggestions.map(suggestion => {
+            let text = typeof suggestion === 'string' ? suggestion : suggestion.text;
+            const wordCount = text.trim().split(/\s+/).length;
+            
+            // If too long, truncate to 15 words
+            if (wordCount > 15) {
+                const words = text.trim().split(/\s+/).slice(0, 15);
+                text = words.join(' ');
+                if (!text.endsWith('!') && !text.endsWith('.') && !text.endsWith('?')) {
+                    text += '!';
+                }
+            }
+            
+            // If author name provided but not mentioned, try to add it naturally
+            if (authorName && !text.toLowerCase().includes(authorName.toLowerCase().split(' ')[0].toLowerCase())) {
+                const firstName = authorName.split(' ')[0];
+                // Add author mention at the start if the comment is supportive or congratulatory
+                if (wordCount < 12 && (text.includes('Great') || text.includes('Love') || text.includes('Congrats'))) {
+                    text = text.replace(/^(Great|Love|Congrats)/, `$1, ${firstName}`);
+                }
+            }
+            
+            return {
+                text: text,
+                type: typeof suggestion === 'object' ? suggestion.type : 'general',
+                length: 'short'
+            };
+        }).filter(s => s.text.split(/\s+/).length >= 3); // Min 3 words
     }
 
     formatSuggestionType(type) {

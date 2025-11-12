@@ -1,6 +1,12 @@
 // LinkedIn AI Assistant Content Script
 // Main coordinator for all AI features on LinkedIn
 
+// Debug logging (set to false in production)
+const DEBUG = false;
+const log = (...args) => DEBUG && console.log(...args);
+const logError = (...args) => DEBUG && console.error(...args);
+const logWarn = (...args) => DEBUG && console.warn(...args);
+
 class LinkedInAIAssistant {
     constructor() {
         this.settings = {};
@@ -23,7 +29,7 @@ class LinkedInAIAssistant {
             await this.loadSettings();
 
             // Initialize components
-            this.initializeComponents();
+            await this.initializeComponents();
 
             // Setup message listeners
             this.setupMessageListeners();
@@ -35,10 +41,12 @@ class LinkedInAIAssistant {
             this.startMonitoring();
 
             this.isInitialized = true;
-            console.log('LinkedIn AI Assistant initialized successfully');
+            // Expose for other components (bot panel)
+            window.linkedInAssistant = this;
+            log('LinkedIn AI Assistant initialized successfully');
 
         } catch (error) {
-            console.error('Error initializing LinkedIn AI Assistant:', error);
+            logError('Error initializing LinkedIn AI Assistant:', error);
         }
     }
 
@@ -46,7 +54,7 @@ class LinkedInAIAssistant {
         this.settings = await AIAssistantStorage.getSettings();
     }
 
-    initializeComponents() {
+    async initializeComponents() {
         // Initialize all AI components
         if (this.settings.postCreatorEnabled) {
             this.components.postCreator = new AIPostCreator(this.settings);
@@ -63,6 +71,75 @@ class LinkedInAIAssistant {
         if (this.settings.rewriteAnywhereEnabled) {
             this.components.rewriteAnywhere = new AIRewriteAnywhere(this.settings);
         }
+
+        // Initialize Bot Panel (ensure the class exists; the file may not have been injected yet)
+        try {
+            if (window.AIBotPanel) {
+                this.components.botPanel = new AIBotPanel(this.settings);
+                this.components.botPanel.attachToPage();
+            } else {
+                // Dynamically inject the script from the extension and wait for it to define window.AIBotPanel
+                await this._ensureInjectedScript('components/bot-panel.js', 'AIBotPanel');
+                if (window.AIBotPanel) {
+                    this.components.botPanel = new AIBotPanel(this.settings);
+                    this.components.botPanel.attachToPage();
+                } else {
+                    logWarn('Bot panel class did not become available after injection');
+                }
+            }
+        } catch (e) { logWarn('Bot panel not initialized', e); }
+    }
+
+    // Helper: inject an extension script into the page context if a global isn't present
+    _ensureInjectedScript(scriptPath, globalName, timeout = 3000) {
+        return new Promise(async (resolve) => {
+            try {
+                if (window[globalName]) return resolve(true);
+
+                const src = chrome && chrome.runtime ? chrome.runtime.getURL(scriptPath) : scriptPath;
+
+                // First try background-driven injection (more reliable under MV3)
+                try {
+                    const resp = await new Promise(res => chrome.runtime.sendMessage({ action: 'injectScript', file: scriptPath }, res));
+                    if (resp && resp.success) {
+                        // wait briefly for the global to appear
+                        const start = Date.now();
+                        const check = () => {
+                            if (window[globalName]) return resolve(true);
+                            if (Date.now() - start > timeout) return resolve(false);
+                            setTimeout(check, 80);
+                        };
+                        return check();
+                    }
+                } catch (e) {
+                    // fallthrough to tag injection
+                }
+
+                // Avoid inserting duplicates
+                if (document.querySelector(`script[data-ai-src="${src}"]`)) {
+                    const start = Date.now();
+                    const check = () => {
+                        if (window[globalName]) return resolve(true);
+                        if (Date.now() - start > timeout) return resolve(false);
+                        setTimeout(check, 120);
+                    };
+                    return check();
+                }
+
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = true;
+                s.setAttribute('data-ai-src', src);
+                s.onload = () => {
+                    setTimeout(() => resolve(!!window[globalName]), 50);
+                };
+                s.onerror = () => resolve(false);
+                (document.head || document.documentElement).appendChild(s);
+            } catch (err) {
+                logWarn('Failed to inject script', scriptPath, err);
+                resolve(false);
+            }
+        });
     }
 
     setupMessageListeners() {
@@ -81,7 +158,17 @@ class LinkedInAIAssistant {
                     break;
 
                 default:
-                    console.log('Unknown message action:', message.action);
+                    log('Unknown message action:', message.action);
+            }
+        });
+        // Listen for bot panel triggers
+        document.addEventListener('ai-bot-trigger', (e) => {
+            const name = e.detail?.name;
+            if (name && this.components && this.components[name]) {
+                const comp = this.components[name];
+                if (name === 'postCreator' && comp.showPostCreatorPanel) comp.showPostCreatorPanel(document.activeElement);
+                if (name === 'rewriteAnywhere' && comp.rewriteText) comp.rewriteText(document.activeElement);
+                if (name === 'inboxAssistant' && comp.showSuggestions) comp.showSuggestions(document.activeElement);
             }
         });
     }
@@ -133,6 +220,11 @@ class LinkedInAIAssistant {
 
         // Also initialize existing elements
         this.initializeExistingElements();
+
+        // Start feed keyword scanner if enabled
+        if (this.settings.keywordAlertsEnabled) {
+            this.startFeedScanner();
+        }
     }
 
     initializeExistingElements() {
@@ -165,6 +257,77 @@ class LinkedInAIAssistant {
         });
     }
 
+    // --- Feed Scanner for Keyword Alerts ---
+    startFeedScanner() {
+        // Debounced scan to avoid heavy CPU
+        let scanTimeout = null;
+        const debouncedScan = () => {
+            clearTimeout(scanTimeout);
+            scanTimeout = setTimeout(() => this.scanFeedForKeywords(), 800);
+        };
+
+        // Initial scan
+        this.scanFeedForKeywords();
+
+        // Observe feed changes
+        const feedParent = document.querySelector(AIAssistantDOM.selectors.feedContainer) || document.body;
+        this.feedObserver = new MutationObserver(() => debouncedScan());
+        this.feedObserver.observe(feedParent, { childList: true, subtree: true });
+
+        // Periodic safety scan (SPA updates)
+        this.feedInterval = setInterval(() => this.scanFeedForKeywords(), 10000);
+    }
+
+    stopFeedScanner() {
+        if (this.feedObserver) {
+            this.feedObserver.disconnect();
+            this.feedObserver = null;
+        }
+        if (this.feedInterval) {
+            clearInterval(this.feedInterval);
+            this.feedInterval = null;
+        }
+    }
+
+    scanFeedForKeywords() {
+        if (!this.settings.keywordAlertsEnabled) return;
+
+        const keywords = (this.settings.keywordList || []).filter(Boolean).map(k => k.toLowerCase());
+        if (keywords.length === 0) return;
+
+        const posts = document.querySelectorAll(AIAssistantDOM.selectors.postContent);
+        posts.forEach(post => {
+            if (post.dataset.aiAlerted === '1') return;
+
+            const text = (post.innerText || post.textContent || '').toLowerCase();
+            const matched = keywords.some(k => text.includes(k));
+
+            if (matched && (text.includes('hiring') || text.includes('hire') || text.includes('project') || text.includes('looking for'))) {
+                post.dataset.aiAlerted = '1';
+                this.notifyKeywordMatch(post, text, keywords);
+            }
+        });
+    }
+
+    notifyKeywordMatch(postEl, text, keywords) {
+        const matched = keywords.filter(k => text.includes(k)).slice(0, 3).join(', ');
+
+        // Badge/Toast in page
+        this.showNotification(`Keyword match: ${matched}`, 'success');
+
+        // Ask background to show system notification + optional sound
+        try {
+            // Try to extract a permalink for the post
+            let url = '';
+            const article = postEl.closest('article') || postEl.closest('[data-urn]');
+            const anchor = article && (article.querySelector('a[href*="/feed/update/"]') || article.querySelector('a[href*="/posts/"]'));
+            if (anchor && anchor.href) {
+                url = anchor.href.split('?')[0];
+            }
+            chrome.runtime.sendMessage({ action: 'keywordAlert', matched, preview: text.slice(0, 180), url });
+        } catch (e) {}
+    }
+
     handleSettingsUpdate(newSettings) {
         this.settings = { ...this.settings, ...newSettings };
 
@@ -189,8 +352,8 @@ class LinkedInAIAssistant {
 
         // Reinitialize based on current settings
         this.components = {};
-        this.initializeComponents();
-        this.initializeExistingElements();
+        // Re-run async initialization
+        this.initializeComponents().then(() => this.initializeExistingElements()).catch((e) => logError('Failed to reinitialize components', e));
     }
 
     handleGetSuggestions() {

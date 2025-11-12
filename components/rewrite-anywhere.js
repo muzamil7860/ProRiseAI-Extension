@@ -7,6 +7,7 @@ class AIRewriteAnywhere {
         this.attachedElements = new WeakSet();
         this.floatingButtons = new WeakMap();
         this.activeRewritePanels = new Map();
+        this.panelCloseHandlers = new Map();
     }
 
     async attachToElement(element) {
@@ -21,33 +22,38 @@ class AIRewriteAnywhere {
     }
 
     monitorElementText(element) {
-        let textCheckTimeout;
-
         const checkText = () => {
-            clearTimeout(textCheckTimeout);
-            textCheckTimeout = setTimeout(() => {
-                const text = AIAssistantDOM.getEditableText(element);
-                const hasText = text.trim().length > 5; // Minimum 5 characters
-                
-                if (hasText && !this.floatingButtons.has(element)) {
-                    this.showFloatingButton(element);
-                } else if (!hasText && this.floatingButtons.has(element)) {
-                    this.hideFloatingButton(element);
-                }
-            }, 300);
+            // Check if feature is enabled
+            if (!this.settings.rewriteAnywhereEnabled) {
+                this.hideFloatingButton(element);
+                return;
+            }
+
+            const text = AIAssistantDOM.getEditableText(element);
+            const hasText = text.trim().length > 2;
+            
+            if (hasText && !this.floatingButtons.has(element)) {
+                this.showFloatingButton(element);
+            } else if (!hasText && this.floatingButtons.has(element)) {
+                this.hideFloatingButton(element);
+            }
         };
 
+        // Instant detection - no timeout
         element.addEventListener('input', checkText);
         element.addEventListener('focus', checkText);
-        element.addEventListener('blur', () => {
-            setTimeout(() => {
-                // Keep button visible for a short time after losing focus
-                const activePanel = this.activeRewritePanels.get(element);
-                if (!activePanel || activePanel.style.display === 'none') {
-                    setTimeout(() => this.hideFloatingButton(element), 2000);
-                }
-            }, 100);
+        element.addEventListener('keyup', checkText);
+        element.addEventListener('paste', checkText);
+        
+        // Show on text selection
+        element.addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            if (selection && selection.toString().trim().length > 2) {
+                checkText();
+            }
         });
+        
+        element.addEventListener('select', checkText);
 
         // Initial check
         checkText();
@@ -55,7 +61,11 @@ class AIRewriteAnywhere {
 
     showFloatingButton(element) {
         if (this.floatingButtons.has(element)) {
-            return;
+            const existing = this.floatingButtons.get(element);
+            if (existing && existing.parentElement) {
+                this.positionFloatingButton(existing, element);
+                return;
+            }
         }
 
         const button = this.createFloatingButton(element);
@@ -72,17 +82,17 @@ class AIRewriteAnywhere {
         const button = document.createElement('button');
         button.className = 'ai-rewrite-floating-btn';
         button.innerHTML = '✨';
-        button.title = 'AI Rewrite (Ctrl+Shift+R)';
+        button.title = 'AI Rewrite';
         
         button.style.cssText = `
             position: fixed;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             border: none;
             background: linear-gradient(135deg, #EC4899, #BE185D);
             color: white;
-            font-size: 12px;
+            font-size: 14px;
             cursor: pointer;
             z-index: 9999;
             box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
@@ -95,7 +105,6 @@ class AIRewriteAnywhere {
             animation: ai-float-in 0.3s ease forwards;
         `;
 
-        // Add animation keyframes
         if (!document.querySelector('#ai-float-animations')) {
             const style = document.createElement('style');
             style.id = 'ai-float-animations';
@@ -105,10 +114,6 @@ class AIRewriteAnywhere {
                         opacity: 1;
                         transform: scale(1);
                     }
-                }
-                @keyframes ai-pulse {
-                    0%, 100% { transform: scale(1); }
-                    50% { transform: scale(1.1); }
                 }
             `;
             document.head.appendChild(style);
@@ -135,12 +140,11 @@ class AIRewriteAnywhere {
 
     positionFloatingButton(button, element) {
         const rect = element.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
         
-        // Position button at bottom-right corner of element
-        button.style.top = `${rect.bottom + scrollTop - 14}px`;
-        button.style.left = `${rect.right + scrollLeft - 14}px`;
+        // Position button at bottom-right corner, slightly outside to avoid disrupting typing
+        button.style.top = `${rect.bottom - 36}px`;
+        button.style.left = `${rect.right - 36}px`;
+        button.style.pointerEvents = 'auto';
     }
 
     observeElementPosition(element, button) {
@@ -155,15 +159,12 @@ class AIRewriteAnywhere {
             });
         };
 
-        // Update position on scroll and resize
         window.addEventListener('scroll', updatePosition, { passive: true });
         window.addEventListener('resize', updatePosition, { passive: true });
         
-        // Use MutationObserver for DOM changes that might affect position
         const observer = new MutationObserver(updatePosition);
         observer.observe(document.body, { childList: true, subtree: true });
         
-        // Store cleanup functions
         button._cleanup = () => {
             window.removeEventListener('scroll', updatePosition);
             window.removeEventListener('resize', updatePosition);
@@ -189,16 +190,17 @@ class AIRewriteAnywhere {
     }
 
     showRewritePanel(element) {
-        // Close any existing panel
         this.hideRewritePanel(element);
 
         const panel = this.createRewritePanel(element);
+        // mark as anchored so CSS applies
+        panel.classList.add('ai-anchored-panel');
         document.body.appendChild(panel);
-        
-        this.positionRewritePanel(panel, element);
+
+        // Position as anchored (right by default; flips to left if needed)
+        this.positionAnchoredPanel(panel, element);
         this.activeRewritePanels.set(element, panel);
         
-        // Focus on the panel
         const toneSelect = panel.querySelector('.ai-rewrite-tone');
         if (toneSelect) {
             toneSelect.focus();
@@ -222,28 +224,27 @@ class AIRewriteAnywhere {
             
             <div class="ai-rewrite-content">
                 <div class="ai-rewrite-original">
-                    <label>Original Text:</label>
-                    <div class="ai-text-preview">${this.truncateText(currentText, 100)}</div>
+                    <label>Original:</label>
+                    <div class="ai-text-preview">${this.truncateText(currentText, 80)}</div>
                 </div>
                 
                 <div class="ai-rewrite-controls">
                     <div class="ai-rewrite-control-group">
-                        <label for="ai-rewrite-tone">Tone:</label>
+                        <label for="ai-rewrite-tone">Style:</label>
                         <select id="ai-rewrite-tone" class="ai-rewrite-tone">
                             <option value="professional">Professional</option>
                             <option value="friendly">Friendly</option>
                             <option value="persuasive">Persuasive</option>
-                            <option value="storytelling">Storytelling</option>
-                            <option value="humorous">Humorous</option>
-                            <option value="concise">More Concise</option>
-                            <option value="detailed">More Detailed</option>
+                            <option value="concise">Concise</option>
+                            <option value="detailed">Detailed</option>
                             <option value="casual">Casual</option>
+                            <option value="roman_urdu_to_english">Roman Urdu → English</option>
                         </select>
                     </div>
                     
                     <div class="ai-rewrite-control-group">
-                        <label for="ai-rewrite-instructions">Custom Instructions (Optional):</label>
-                        <input type="text" id="ai-rewrite-instructions" placeholder="e.g., make it sound more confident" />
+                        <label for="ai-rewrite-instructions">Custom:</label>
+                        <input type="text" id="ai-rewrite-instructions" placeholder="optional" />
                     </div>
                     
                     <div class="ai-rewrite-actions">
@@ -253,14 +254,14 @@ class AIRewriteAnywhere {
                         </button>
                         <button id="ai-rewrite-variants" class="ai-btn ai-btn-secondary">
                             <i class="fas fa-list"></i>
-                            Multiple Variants
+                            5 Variants
                         </button>
                     </div>
                 </div>
                 
                 <div id="ai-rewrite-results" class="ai-rewrite-results" style="display: none;">
                     <div class="ai-rewrite-results-header">
-                        <label>Rewritten Text:</label>
+                        <label>Results:</label>
                         <div class="ai-rewrite-results-actions">
                             <button id="ai-rewrite-regenerate" class="ai-btn ai-btn-small">Regenerate</button>
                         </div>
@@ -277,8 +278,9 @@ class AIRewriteAnywhere {
     setupRewritePanelEvents(panel, element) {
         const currentText = AIAssistantDOM.getEditableText(element);
         
-        // Close panel
-        panel.querySelector('.ai-rewrite-close').addEventListener('click', () => {
+        // Close panel - ONLY on close button click
+        panel.querySelector('.ai-rewrite-close').addEventListener('click', (e) => {
+            e.stopPropagation();
             this.hideRewritePanel(element);
         });
 
@@ -301,23 +303,14 @@ class AIRewriteAnywhere {
             this.generateRewrite(panel, element, currentText, true);
         });
 
-        // Close panel when clicking outside
-        setTimeout(() => {
-            document.addEventListener('click', function closePanelOutside(e) {
-                if (!panel.contains(e.target) && !element.contains(e.target)) {
-                    this.hideRewritePanel(element);
-                    document.removeEventListener('click', closePanelOutside);
-                }
-            }.bind(this));
-        }, 100);
-
-        // Handle escape key
-        document.addEventListener('keydown', function handleEscape(e) {
+        // Handle escape key ONLY
+        const escapeHandler = (e) => {
             if (e.key === 'Escape') {
                 this.hideRewritePanel(element);
-                document.removeEventListener('keydown', handleEscape);
             }
-        }.bind(this));
+        };
+        document.addEventListener('keydown', escapeHandler);
+        this.panelCloseHandlers.set(element, escapeHandler);
     }
 
     async generateRewrite(panel, element, originalText, multipleVariants = false) {
@@ -330,12 +323,15 @@ class AIRewriteAnywhere {
         const originalGenerateText = generateBtn.innerHTML;
         const originalVariantsText = variantsBtn.innerHTML;
         
-        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rewriting...';
-        variantsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    generateBtn.innerHTML = '<span class="ai-post-spinner"></span> Rewriting...';
+    variantsBtn.innerHTML = '<span class="ai-post-spinner"></span> Generating...';
         generateBtn.disabled = true;
         variantsBtn.disabled = true;
 
         try {
+            // show branded writing indicator inside the panel while generating
+            try { AIAssistantDOM.showWritingIndicator(panel.querySelector('.ai-rewrite-content') || panel, { inline: true }); } catch (e) {}
+
             if (multipleVariants) {
                 await this.generateMultipleVariants(panel, element, originalText, tone, instructions);
             } else {
@@ -345,11 +341,18 @@ class AIRewriteAnywhere {
                     this.displaySingleRewrite(panel, element, rewrittenContent);
                 }
             }
+            // mark complete to play completion animation
+            panel.classList.add('ai-complete');
+            
+            // Track rewrite usage
+            await AIAssistantAPI.updateStats('rewritesGenerated');
 
         } catch (error) {
             console.error('Error rewriting text:', error);
             AIAssistantAPI.showError(error, panel.querySelector('.ai-rewrite-content'));
         } finally {
+            // hide writing indicator
+            try { AIAssistantDOM.hideWritingIndicator(panel.querySelector('.ai-rewrite-content') || panel); } catch (e) {}
             generateBtn.innerHTML = originalGenerateText;
             variantsBtn.innerHTML = originalVariantsText;
             generateBtn.disabled = false;
@@ -358,29 +361,34 @@ class AIRewriteAnywhere {
     }
 
     async generateMultipleVariants(panel, element, originalText, tone, instructions) {
-        const variants = [];
-        const numVariants = 3;
-
-        // Generate multiple variants
+        const numVariants = 5;
+        const variantPromises = [];
+        
         for (let i = 0; i < numVariants; i++) {
-            try {
-                const customInstructions = instructions + (i === 0 ? '' : ` (Variant ${i + 1})`);
-                const rewrittenContent = await AIAssistantAPI.rewriteText(originalText, tone, customInstructions);
-                
-                if (rewrittenContent && rewrittenContent.rewritten) {
-                    variants.push({
-                        text: rewrittenContent.rewritten,
-                        improvements: rewrittenContent.improvements || [],
-                        variant: i + 1
-                    });
-                }
-            } catch (error) {
-                console.error(`Error generating variant ${i + 1}:`, error);
-            }
+            const customInstructions = instructions + (i === 0 ? '' : ` v${i + 1}`);
+            variantPromises.push(
+                AIAssistantAPI.rewriteText(originalText, tone, customInstructions)
+                    .then(rewrittenContent => {
+                        if (rewrittenContent && rewrittenContent.rewritten) {
+                            return {
+                                text: rewrittenContent.rewritten,
+                                variant: i + 1
+                            };
+                        }
+                        return null;
+                    })
+                    .catch(error => {
+                        console.error(`Error generating variant ${i + 1}:`, error);
+                        return null;
+                    })
+            );
         }
 
-        if (variants.length > 0) {
-            this.displayMultipleVariants(panel, element, variants);
+        const results = await Promise.all(variantPromises);
+        const validVariants = results.filter(v => v !== null);
+
+        if (validVariants.length > 0) {
+            this.displayMultipleVariants(panel, element, validVariants);
         }
     }
 
@@ -390,7 +398,6 @@ class AIRewriteAnywhere {
 
         const variant = this.createVariantItem({
             text: rewrittenContent.rewritten,
-            improvements: rewrittenContent.improvements || [],
             variant: 1
         }, element, true);
 
@@ -417,17 +424,12 @@ class AIRewriteAnywhere {
         item.innerHTML = `
             <div class="ai-variant-header">
                 <div class="ai-variant-label">
-                    ${variant.variant ? `Variant ${variant.variant}` : 'Rewritten Text'}
-                    ${isFirst ? '<span class="ai-variant-recommended">Recommended</span>' : ''}
+                    Variant ${variant.variant}
+                    ${isFirst ? '<span class="ai-variant-recommended">★</span>' : ''}
                 </div>
                 <div class="ai-variant-actions">
                     <button class="ai-variant-use" title="Use this version">
-                        <i class="fas fa-check"></i>
-                        Use
-                    </button>
-                    <button class="ai-variant-edit" title="Edit before using">
-                        <i class="fas fa-edit"></i>
-                        Edit
+                        <i class="fas fa-check"></i> Use
                     </button>
                     <button class="ai-variant-copy" title="Copy to clipboard">
                         <i class="fas fa-copy"></i>
@@ -436,15 +438,6 @@ class AIRewriteAnywhere {
             </div>
             
             <div class="ai-variant-text">${variant.text}</div>
-            
-            ${variant.improvements && variant.improvements.length > 0 ? `
-                <div class="ai-variant-improvements">
-                    <strong>Improvements:</strong>
-                    <ul>
-                        ${variant.improvements.map(improvement => `<li>${improvement}</li>`).join('')}
-                    </ul>
-                </div>
-            ` : ''}
         `;
 
         this.setupVariantItemEvents(item, variant.text, element);
@@ -452,17 +445,10 @@ class AIRewriteAnywhere {
     }
 
     setupVariantItemEvents(item, variantText, element) {
-        // Use variant
         item.querySelector('.ai-variant-use').addEventListener('click', () => {
             this.useVariant(element, variantText);
         });
 
-        // Edit variant
-        item.querySelector('.ai-variant-edit').addEventListener('click', () => {
-            this.editVariant(element, variantText);
-        });
-
-        // Copy variant
         item.querySelector('.ai-variant-copy').addEventListener('click', () => {
             this.copyVariant(variantText);
         });
@@ -473,28 +459,14 @@ class AIRewriteAnywhere {
         element.focus();
         
         this.hideRewritePanel(element);
-        AIAssistantAPI.showSuccess('Text rewritten successfully!', element.parentElement);
-    }
-
-    editVariant(element, variantText) {
-        AIAssistantDOM.setEditableText(element, variantText);
-        element.focus();
-        
-        // Position cursor at end
-        if (element.setSelectionRange) {
-            element.setSelectionRange(variantText.length, variantText.length);
-        }
-        
-        this.hideRewritePanel(element);
-        AIAssistantAPI.showSuccess('Text ready for editing!', element.parentElement);
+        AIAssistantAPI.showSuccess('Text rewritten!', element.parentElement);
     }
 
     async copyVariant(variantText) {
         try {
             await navigator.clipboard.writeText(variantText);
-            // Show temporary success message
             const message = document.createElement('div');
-            message.textContent = 'Copied to clipboard!';
+            message.textContent = 'Copied!';
             message.style.cssText = `
                 position: fixed;
                 bottom: 20px;
@@ -517,32 +489,57 @@ class AIRewriteAnywhere {
     }
 
     positionRewritePanel(panel, element) {
-        const rect = element.getBoundingClientRect();
-        const panelWidth = 450;
-        const panelHeight = 400;
-        
-        let left = rect.right + 15;
-        let top = rect.top;
+        // Deprecated for anchored layout. Anchored panels use positionAnchoredPanel
+        this.positionAnchoredPanel(panel, element);
+    }
 
-        // Adjust if panel would go off-screen
-        if (left + panelWidth > window.innerWidth) {
-            left = rect.left - panelWidth - 15;
+    positionAnchoredPanel(panel, element) {
+        const panelWidth = 420;
+        const margin = 12;
+        const viewportW = window.innerWidth;
+        const rect = element.getBoundingClientRect();
+
+        // prefer right side anchor
+        let anchor = 'right';
+        // if element is too close to right edge or viewport too narrow, flip to left
+        if (rect.right + panelWidth + margin > viewportW && rect.left > panelWidth + margin) {
+            anchor = 'left';
         }
-        if (left < 15) {
-            left = Math.max(15, (window.innerWidth - panelWidth) / 2);
-        }
-        
-        if (top + panelHeight > window.innerHeight) {
-            top = window.innerHeight - panelHeight - 15;
-        }
-        if (top < 15) {
-            top = 15;
+
+        // Apply anchored classes
+        panel.classList.add('ai-post-panel', 'modern', 'ai-anchored');
+        panel.classList.remove('ai-complete');
+
+        if (anchor === 'right') {
+            panel.style.right = `${margin}px`;
+            panel.style.left = 'auto';
+            panel.style.top = `${10}px`;
+            panel.style.bottom = `${10}px`;
+            panel.style.width = `${panelWidth}px`;
+            panel.dataset.anchor = 'right';
+        } else {
+            panel.style.left = `${margin}px`;
+            panel.style.right = 'auto';
+            panel.style.top = `${10}px`;
+            panel.style.bottom = `${10}px`;
+            panel.style.width = `${panelWidth}px`;
+            panel.dataset.anchor = 'left';
+            panel.classList.add('ai-anchored-left');
         }
 
         panel.style.position = 'fixed';
-        panel.style.left = `${left}px`;
-        panel.style.top = `${top}px`;
-        panel.style.zIndex = '10000';
+        panel.style.zIndex = '10001';
+        panel.style.overflow = 'hidden';
+
+        // ensure inner content scrolls (single outer scrollbar experience)
+        const content = panel.querySelector('.ai-rewrite-content');
+        if (content) {
+            content.style.overflowY = 'auto';
+            content.style.maxHeight = 'calc(100vh - 120px)';
+        }
+
+        // make sure panel is focusable
+        panel.tabIndex = -1;
     }
 
     hideRewritePanel(element) {
@@ -551,15 +548,19 @@ class AIRewriteAnywhere {
             panel.remove();
             this.activeRewritePanels.delete(element);
         }
+        
+        const escapeHandler = this.panelCloseHandlers.get(element);
+        if (escapeHandler) {
+            document.removeEventListener('keydown', escapeHandler);
+            this.panelCloseHandlers.delete(element);
+        }
     }
 
     rewriteText(element) {
-        // Called by main content script for keyboard shortcut
         this.showRewritePanel(element);
     }
 
     showSuggestions(element) {
-        // Called by main content script for keyboard shortcut
         this.showRewritePanel(element);
     }
 
@@ -575,18 +576,14 @@ class AIRewriteAnywhere {
     }
 
     cleanup() {
-        // Remove all floating buttons
-        for (const [element, button] of this.floatingButtons) {
-            if (button.parentElement) {
-                button.remove();
-            }
+        document.querySelectorAll('.ai-rewrite-floating-btn').forEach(button => {
             if (button._cleanup) {
                 button._cleanup();
             }
-        }
+            button.remove();
+        });
         this.floatingButtons = new WeakMap();
 
-        // Remove all active panels
         this.activeRewritePanels.forEach(panel => {
             if (panel.parentElement) {
                 panel.remove();
@@ -594,9 +591,15 @@ class AIRewriteAnywhere {
         });
         this.activeRewritePanels.clear();
 
-        this.attachedElements = new WeakSet();
+        this.panelCloseHandlers.forEach((handler, element) => {
+            document.removeEventListener('keydown', handler);
+        });
+        this.panelCloseHandlers.clear();
+
+        document.querySelectorAll('.ai-rewrite-panel').forEach(panel => panel.remove());
     }
 }
 
-// Export for use by content script
-window.AIRewriteAnywhere = AIRewriteAnywhere;
+if (typeof window !== 'undefined') {
+    window.AIRewriteAnywhere = AIRewriteAnywhere;
+}
