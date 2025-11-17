@@ -1,0 +1,1467 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Transform your LinkedIn experience with AI-powered content creation, rewriting, and engagement tools. Generate posts, comments, and replies instantly.">
+    <meta name="keywords" content="LinkedIn AI, LinkedIn automation, content generation, AI assistant, LinkedIn posts, LinkedIn comments">
+    <title>ProRise AI - Transform Your LinkedIn Presence</title>
+    
+    <!-- Satoshi Font -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+</head>
+<body>
+    <!-- Particle Background - Commented out for now -->
+    <!-- <div id="particles-background"></div> -->
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="proriseai-logo.png" alt="ProRise AI Logo" class="logo-icon">
+                <!-- <span class="logo-text">ProRise AI</span> -->
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#comparison" class="nav-link">Why ProRise AI</a></li>
+                <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                <li><a href="#pricing" class="nav-link">Pricing</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="#" class="btn btn-secondary">Sign In</a>
+                <a href="#contact" class="btn btn-primary">
+                    <span>Get Started</span>
+                    <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 3.5l7.5 6.5-7.5 6.5V3.5z"/>
+                    </svg>
+                </a>
+            </div>
+
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge" data-aos="fade-down">
+                    <span class="badge-dot"></span>
+                    <span>AI-Powered LinkedIn Assistant</span>
+                </div>
+                
+                <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
+                    Transform Your 
+                    <span class="text-gradient">LinkedIn Presence</span> 
+                    with AI Magic
+                </h1>
+                
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+                    Generate engaging posts, craft perfect comments, and respond to messages instantly. 
+                    Powered by advanced AI to boost your professional brand.
+                </p>
+                
+                <div class="hero-actions" data-aos="fade-up" data-aos-delay="300">
+                    <a href="#contact" class="btn btn-primary btn-lg">
+                        <span>Start Free Trial</span>
+                        <svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                        </svg>
+                    </a>
+                    <a href="#demo" class="btn btn-outline btn-lg">
+                        <svg class="btn-icon-left" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span>Watch Demo</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="hero-visual" data-aos="fade-left" data-aos-delay="500">
+                <div class="linkedin-mockup">
+                    <!-- LinkedIn Interface -->
+                    <div class="linkedin-window">
+                        <div class="window-header">
+                            <div class="window-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="window-title">LinkedIn</div>
+                        </div>
+                        
+                        <div class="linkedin-content">
+                            <!-- Demo Container -->
+                            <div class="demo-container">
+                                <!-- Scene 1: AI Post Writing -->
+                                <div class="demo-scene scene-1 active">
+                                    <div class="post-composer-simple">
+                                        <div class="composer-row">
+                                            <div class="user-avatar-circle"></div>
+                                            <div class="composer-input-field">
+                                                <span class="input-placeholder">Share your thoughts...</span>
+                                            </div>
+                                            <button class="ai-button">
+                                                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+                                                </svg>
+                                                AI
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="ai-suggestions-panel">
+                                            <div class="suggestions-header">
+                                                <svg width="18" height="18" viewBox="0 0 20 20" fill="#7dde4f">
+                                                    <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+                                                </svg>
+                                                <span>AI Suggestions</span>
+                                                <div class="live-indicator"></div>
+                                            </div>
+                                            
+                                            <div class="suggestion-skeleton">
+                                                <div class="skeleton-line line-1"></div>
+                                                <div class="skeleton-line line-2"></div>
+                                                <div class="skeleton-line line-3"></div>
+                                            </div>
+                                            
+                                            <div class="suggestion-actions">
+                                                <div class="action-icon copy-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="action-icon check-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polyline points="20 6 9 17 4 12"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Scene 2: Comment Suggestions -->
+                                <div class="demo-scene scene-2">
+                                    <div class="comment-composer-simple">
+                                        <div class="composer-row">
+                                            <div class="user-avatar-circle"></div>
+                                            <div class="composer-input-field">
+                                                <span class="input-placeholder">Add a comment...</span>
+                                            </div>
+                                            <button class="ai-button">
+                                                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+                                                </svg>
+                                                AI
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="ai-suggestions-panel">
+                                            <div class="suggestions-header">
+                                                <svg width="18" height="18" viewBox="0 0 20 20" fill="#7dde4f">
+                                                    <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+                                                </svg>
+                                                <span>AI Suggestions</span>
+                                                <div class="live-indicator"></div>
+                                            </div>
+                                            
+                                            <div class="suggestion-skeleton">
+                                                <div class="skeleton-line line-1"></div>
+                                                <div class="skeleton-line line-2"></div>
+                                                <div class="skeleton-line line-3"></div>
+                                            </div>
+                                            
+                                            <div class="suggestion-actions">
+                                                <div class="action-icon copy-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="action-icon check-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polyline points="20 6 9 17 4 12"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Scene 3: Text Rewriter -->
+                                <div class="demo-scene scene-3">
+                                    <div class="rewriter-simple">
+                                        <div class="rewrite-header">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7dde4f" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            <span>AI Rewriter</span>
+                                            <div class="rewriting-dots">
+                                                <span></span>
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="rewrite-content">
+                                            <div class="rewrite-row">
+                                                <div class="text-box before">
+                                                    <div class="text-label">Original</div>
+                                                    <div class="text-sample">hey can we talk about that project? let me know thanks</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="rewrite-arrow">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7dde4f" stroke-width="2">
+                                                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                                                </svg>
+                                            </div>
+                                            
+                                            <div class="rewrite-row">
+                                                <div class="text-box after">
+                                                    <div class="text-label">Rewritten</div>
+                                                    <div class="text-sample typing-animation">I would appreciate the opportunity to discuss the project details at your convenience. Please let me know.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Scene 4: Job Alerts -->
+                                <div class="demo-scene scene-4">
+                                    <div class="job-alerts-simple">
+                                        <div class="alerts-header">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7dde4f" stroke-width="2">
+                                                <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
+                                            </svg>
+                                            <span>Job Alerts</span>
+                                            <div class="alert-badge">3</div>
+                                        </div>
+                                        
+                                        <div class="job-items">
+                                            <div class="job-item">
+                                                <div class="job-icon">💼</div>
+                                                <div class="job-info">
+                                                    <div class="job-title">Senior Developer</div>
+                                                    <div class="job-meta">Tech Corp • $120k • Remote</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="job-item">
+                                                <div class="job-icon">🚀</div>
+                                                <div class="job-info">
+                                                    <div class="job-title">Product Manager</div>
+                                                    <div class="job-meta">Startup Inc • $100k • Hybrid</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="job-item">
+                                                <div class="job-icon">⚡</div>
+                                                <div class="job-info">
+                                                    <div class="job-title">UX Designer</div>
+                                                    <div class="job-meta">Design Co • $90k • Remote</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Elements -->
+                    <div class="floating-badge badge-2">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#7dde4f">
+                            <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
+                        </svg>
+                        <span>+300% Engagement</span>
+                    </div>
+
+                    <div class="floating-badge badge-3">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#7dde4f">
+                            <path d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+                        </svg>
+                        <span>RisePro AI Powered</span>
+                    </div>
+
+                    <div class="floating-badge badge-4">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#7dde4f">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                        </svg>
+                        <span>Instant Replies</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator" data-aos="fade-up" data-aos-delay="600">
+            <div class="scroll-text">Scroll to explore</div>
+            <div class="scroll-icon">
+                <div class="scroll-dot"></div>
+            </div>
+        </div>
+    </section>
+
+  
+
+
+
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Powerful Features</span>
+                <h2 class="section-title">Everything You Need to Dominate LinkedIn</h2>
+                <p class="section-subtitle">AI-powered tools designed for professionals who want to maximize their LinkedIn impact</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="#7dde4f" opacity="0.1"/>
+                            <path d="M20 10v20M10 20h20" stroke="#7dde4f" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">AI Post Creator</h3>
+                    <p class="feature-description">Generate engaging LinkedIn posts in seconds. Choose from multiple tones and styles to match your brand voice.</p>
+                    <ul class="feature-list">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Multiple content variations</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Hashtag suggestions</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Emoji integration</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Preview before posting</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card featured" data-aos="fade-up" data-aos-delay="200">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="#7dde4f" opacity="0.1"/>
+                            <path d="M12 20h16M12 14h16M12 26h10" stroke="#7dde4f" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Smart Comment Assistant</h3>
+                    <p class="feature-description">Stand out in discussions with AI-crafted comments that are engaging, insightful, and professional.</p>
+                    <ul class="feature-list">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Context-aware suggestions</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Multiple response options</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Tone customization</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>One-click insertion</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="#7dde4f" opacity="0.1"/>
+                            <path d="M20 10c-5.5 0-10 3.58-10 8 0 2.5 1.5 4.75 4 6.25v4.75l4.75-3A11 11 0 0120 26c5.5 0 10-3.58 10-8s-4.5-8-10-8z" stroke="#7dde4f" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Inbox Reply Generator</h3>
+                    <p class="feature-description">Never miss an opportunity. Generate professional replies to LinkedIn messages instantly.</p>
+                    <ul class="feature-list">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Context understanding</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Professional tone</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Quick responses</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Conversation tracking</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="#7dde4f" opacity="0.1"/>
+                            <path d="M10 15h20M10 20h20M10 25h15" stroke="#7dde4f" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Text Rewriter</h3>
+                    <p class="feature-description">Transform any text to match your desired tone and style. Perfect for polishing drafts.</p>
+                    <ul class="feature-list">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Multiple tone options</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Length adjustment</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Grammar enhancement</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Style transformation</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="#7dde4f" opacity="0.1"/>
+                            <path d="M20 12v16m0 0l-6-6m6 6l6-6" stroke="#7dde4f" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Email for Job Applications</h3>
+                    <p class="feature-description">Craft perfect job application emails with professional subjects and body variants.</p>
+                    <ul class="feature-list">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Multiple email variants</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Subject line options</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Profile integration</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Follow-up templates</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="#7dde4f" opacity="0.1"/>
+                            <path d="M20 8a12 12 0 100 24 12 12 0 000-24zm-2 18l-5-5 1.4-1.4L18 23l7.6-7.6L27 17l-9 9z" stroke="#7dde4f" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Keyword Alerts</h3>
+                    <p class="feature-description">Get notified when relevant opportunities appear in your feed. Never miss a hiring post.</p>
+                    <ul class="feature-list">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Custom keyword tracking</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Real-time notifications</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>WhatsApp integration</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>Auto-scanning feed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Simple Process</span>
+                <h2 class="section-title">Get Started in 3 Easy Steps</h2>
+                <p class="section-subtitle">From installation to transformation in minutes</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step" data-aos="fade-right" data-aos-delay="100">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Install Extension</h3>
+                        <p class="step-description">Add ProRise AI to your Chrome browser with one click. Quick and secure setup in seconds.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="animated-browser">
+                            <div class="browser-chrome">
+                                <div class="chrome-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <div class="chrome-bar">chrome://extensions</div>
+                            </div>
+                            <div class="extension-card">
+                                <div class="ext-icon">
+                                    <svg viewBox="0 0 40 40" fill="none">
+                                        <rect width="40" height="40" rx="8" fill="#7dde4f"/>
+                                        <path d="M12 28V12h4v12h6v4H12zm14-16v16h-4V12h4z" fill="#000"/>
+                                    </svg>
+                                </div>
+                                <div class="ext-info">
+                                    <div class="ext-name">ProRise AI</div>
+                                    <div class="ext-desc">LinkedIn AI Assistant</div>
+                                </div>
+                                <div class="ext-toggle">
+                                    <div class="toggle-switch"></div>
+                                </div>
+                            </div>
+                            <div class="install-progress">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <!-- <div class="success-check">
+                                <svg viewBox="0 0 50 50" fill="none">
+                                    <circle cx="25" cy="25" r="24" stroke="#7dde4f" stroke-width="2"/>
+                                    <path d="M15 25l7 7 13-13" stroke="#7dde4f" stroke-width="2.5" stroke-linecap="round"/>
+                                </svg>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-aos="fade-left" data-aos-delay="200">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Configure Preferences</h3>
+                        <p class="step-description">Set your tone, style, and preferences in real-time. Customize the AI to match your brand perfectly.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="animated-settings">
+                            <div class="settings-panel">
+                                <div class="setting-row">
+                                    <div class="setting-icon">
+                                        <svg viewBox="0 0 20 20" fill="#7dde4f">
+                                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="setting-label">Keyword Alerts</div>
+                                    <div class="animated-toggle active">
+                                        <div class="toggle-knob"></div>
+                                    </div>
+                                </div>
+                                <div class="setting-row">
+                                    <div class="setting-icon">
+                                        <svg viewBox="0 0 20 20" fill="#7dde4f">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="setting-label">AI Post Creator</div>
+                                    <div class="animated-toggle active">
+                                        <div class="toggle-knob"></div>
+                                    </div>
+                                </div>
+                                <div class="setting-row">
+                                    <div class="setting-icon">
+                                        <svg viewBox="0 0 20 20" fill="#7dde4f">
+                                            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="setting-label">Comment Assistant</div>
+                                    <div class="animated-toggle">
+                                        <div class="toggle-knob"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-preview">
+                                <div class="preview-badge">
+                                    <svg viewBox="0 0 20 20" fill="#7dde4f">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <span>Configured!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-aos="fade-right" data-aos-delay="300">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Start Creating</h3>
+                        <p class="step-description">Generate posts, comments, and replies with AI in real-time. Watch your engagement transform instantly.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="animated-creation">
+                            <div class="creation-screen">
+                                <div class="linkedin-post-preview">
+                                    <div class="post-header">
+                                        <div class="post-avatar"></div>
+                                        <div class="post-author">
+                                            <div class="author-name">Your Name</div>
+                                            <div class="author-title">Professional Title</div>
+                                        </div>
+                                    </div>
+                                    <div class="post-content">
+                                        <div class="typing-animation">
+                                            <div class="typed-text"></div>
+                                            <div class="cursor-blink">|</div>
+                                        </div>
+                                    </div>
+                                    <div class="ai-magic-effect">
+                                        <div class="magic-particle"></div>
+                                        <div class="magic-particle"></div>
+                                        <div class="magic-particle"></div>
+                                        <div class="magic-particle"></div>
+                                        <div class="magic-particle"></div>
+                                    </div>
+                                    <div class="post-engagement">
+                                        <div class="engagement-item">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                                            </svg>
+                                            <div class="engagement-count">
+                                                <span class="count-number" data-target="342">0</span>
+                                            </div>
+                                        </div>
+                                        <div class="engagement-item">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                            </svg>
+                                            <div class="engagement-count">
+                                                <span class="count-number" data-target="89">0</span>
+                                            </div>
+                                        </div>
+                                        <div class="engagement-item">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                                                <polyline points="16 6 12 2 8 6"/>
+                                                <line x1="12" y1="2" x2="12" y2="15"/>
+                                            </svg>
+                                            <div class="engagement-count">
+                                                <span class="count-number" data-target="156">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="views-indicator">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                        <span class="views-count" data-target="12847">0</span>
+                                        <span class="views-label">views</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Video Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <div class="demo-container" data-aos="zoom-in">
+                <div class="demo-badge">
+                    <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span>Watch Demo</span>
+                </div>
+                <h2 class="demo-title">See LinkedIn AI Assistant in Action</h2>
+                <div class="demo-video">
+                    <div class="video-placeholder">
+                        <button class="play-button">
+                            <svg viewBox="0 0 80 80" fill="none">
+                                <circle cx="40" cy="40" r="38" fill="#7dde4f"/>
+                                <path d="M32 25v30l24-15z" fill="#000000"/>
+                            </svg>
+                        </button>
+                        <div class="video-bg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Flexible Pricing</span>
+                <h2 class="section-title">Choose Your Perfect Plan</h2>
+                <p class="section-subtitle">Start free, upgrade when you're ready. No credit card required.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Starter</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount">$0.99</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="pricing-description">Perfect for trying out the platform</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>50 AI generations/month</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Basic post creator</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Comment suggestions</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Email support</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline btn-block">Start Free</a>
+                </div>
+
+                <div class="pricing-card featured" data-aos="fade-up" data-aos-delay="200">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Professional</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount">$2.99</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="pricing-description">For serious LinkedIn professionals</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Unlimited AI generations</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>All AI features</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Priority support</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Advanced analytics</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Custom templates</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Keyword alerts</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary btn-block">Start Trial</a>
+                </div>
+
+                <div class="pricing-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Enterprise</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount">Custom</span>
+                        </div>
+                        <p class="pricing-description">For teams and organizations</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Everything in Professional</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Team management</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>API access</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Dedicated account manager</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>Custom integrations</li>
+                        <li><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 11l-3-3 1.4-1.4L8 10.2l4.6-4.6L14 7l-6 6z"/></svg>SLA guarantee</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-outline btn-block">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+      <!-- Before/After Comparison Section -->
+    <section class="comparison-section" id="comparison">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">The Transformation</span>
+                <h2 class="section-title">See The Real-Time Difference</h2>
+                <p class="section-subtitle">Transform your LinkedIn from invisible to influential in days</p>
+            </div>
+
+            <div class="comparison-grid">
+                <!-- Row 1: Engagement Performance -->
+                <div class="comparison-card" data-aos="fade-up">
+                    <div class="growth-badge">+8000%</div>
+                    <div class="card-header">
+                        <h3 class="card-title">Post Engagement</h3>
+                    </div>
+                    <div class="card-comparison">
+                        <div class="comparison-side before-side">
+                            <div class="side-label">
+                                <svg class="label-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Before</span>
+                            </div>
+                            <div class="metric-display">
+                                <div class="metric-stat">
+                                    <span class="stat-number negative" data-target="48">0</span>
+                                    <span class="stat-label">views</span>
+                                </div>
+                                <div class="metric-stat">
+                                    <span class="stat-number negative" data-target="3">0</span>
+                                    <span class="stat-label">likes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comparison-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                        <div class="comparison-side after-side">
+                            <div class="side-label">
+                                <svg class="label-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>After</span>
+                            </div>
+                            <div class="metric-display">
+                                <div class="metric-stat">
+                                    <span class="stat-number positive" data-target="3847">0</span>
+                                    <span class="stat-label">views</span>
+                                </div>
+                                <div class="metric-stat">
+                                    <span class="stat-number positive" data-target="342">0</span>
+                                    <span class="stat-label">likes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-expanded-view">
+                        <div class="expanded-header">
+                            <h4>Growth Analytics</h4>
+                        </div>
+                        <div class="growth-chart engagement-chart">
+                            <svg viewBox="0 0 200 100" class="mini-chart">
+                                <defs>
+                                    <linearGradient id="engagementGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#7dde4f;stop-opacity:0.3"/>
+                                        <stop offset="100%" style="stop-color:#7dde4f;stop-opacity:0"/>
+                                    </linearGradient>
+                                </defs>
+                                <polyline class="chart-line" points="0,95 50,85 100,60 150,25 200,10" stroke="#7dde4f" stroke-width="2" fill="none"/>
+                                <polygon class="chart-area" points="0,95 50,85 100,60 150,25 200,10 200,100 0,100" fill="url(#engagementGradient)"/>
+                            </svg>
+                            <div class="chart-label">Views Over Time</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="80, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                </div>
+                                <span class="stat-text">80x Views</span>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="95, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                </div>
+                                <span class="stat-text">114x Likes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Job Opportunities -->
+                <div class="comparison-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="growth-badge">∞ Growth</div>
+                    <div class="card-header">
+                        <h3 class="card-title">Job & Project Opportunities</h3>
+                    </div>
+                    <div class="card-comparison">
+                        <div class="comparison-side before-side">
+                            <div class="side-label">
+                                <svg class="label-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Before</span>
+                            </div>
+                            <div class="opportunity-display">
+                                <div class="opp-item missed">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                    </svg>
+                                    <div class="opp-text">
+                                        <span class="opp-count">0</span>
+                                        <span class="opp-label">Job Inquiries</span>
+                                    </div>
+                                </div>
+                                <div class="opp-item missed">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <div class="opp-text">
+                                        <span class="opp-count">2</span>
+                                        <span class="opp-label">Project Leads</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comparison-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                        <div class="comparison-side after-side">
+                            <div class="side-label">
+                                <svg class="label-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>After</span>
+                            </div>
+                            <div class="opportunity-display">
+                                <div class="opp-item gained">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                    </svg>
+                                    <div class="opp-text">
+                                        <span class="opp-count" data-target="47">0</span>
+                                        <span class="opp-label">Job Inquiries</span>
+                                    </div>
+                                </div>
+                                <div class="opp-item gained">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <div class="opp-text">
+                                        <span class="opp-count" data-target="89">0</span>
+                                        <span class="opp-label">Project Leads</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-expanded-view">
+                        <div class="expanded-header">
+                            <h4>Opportunity Timeline</h4>
+                        </div>
+                        <div class="bar-chart-container">
+                            <div class="bar-chart">
+                                <div class="bar-item">
+                                    <div class="bar-label">Month 1</div>
+                                    <div class="bar-fill" style="--height: 15%"></div>
+                                    <div class="bar-value">7</div>
+                                </div>
+                                <div class="bar-item">
+                                    <div class="bar-label">Month 2</div>
+                                    <div class="bar-fill" style="--height: 35%"></div>
+                                    <div class="bar-value">21</div>
+                                </div>
+                                <div class="bar-item">
+                                    <div class="bar-label">Month 3</div>
+                                    <div class="bar-fill" style="--height: 65%"></div>
+                                    <div class="bar-value">58</div>
+                                </div>
+                                <div class="bar-item">
+                                    <div class="bar-label">Month 4</div>
+                                    <div class="bar-fill" style="--height: 100%"></div>
+                                    <div class="bar-value">136</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number-large">47</div>
+                                <span class="stat-text">Total Jobs</span>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number-large">89</div>
+                                <span class="stat-text">Total Projects</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Professional Writing -->
+                <div class="comparison-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="growth-badge">AI-Enhanced</div>
+                    <div class="card-header">
+                        <h3 class="card-title">Professional Communication</h3>
+                    </div>
+                    <div class="card-comparison">
+                        <div class="comparison-side before-side">
+                            <div class="side-label">
+                                <svg class="label-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Before</span>
+                            </div>
+                            <div class="writing-sample before-writing">
+                                <div class="sample-badge weak">Unprofessional</div>
+                                <p class="sample-text">"hey can we talk about that thing? let me know thanks"</p>
+                                <div class="quality-indicator">
+                                    <div class="quality-bar low"></div>
+                                    <span class="quality-label">Low Quality</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comparison-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                        <div class="comparison-side after-side">
+                            <div class="side-label">
+                                <svg class="label-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>After</span>
+                            </div>
+                            <div class="writing-sample after-writing">
+                                <div class="sample-badge strong">Professional</div>
+                                <p class="sample-text typed-rewrite"></p>
+                                <div class="quality-indicator">
+                                    <div class="quality-bar high"></div>
+                                    <span class="quality-label">Executive Level</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-expanded-view">
+                        <div class="expanded-header">
+                            <h4>Quality Metrics</h4>
+                        </div>
+                        <div class="quality-metrics">
+                            <div class="metric-row">
+                                <span class="metric-label">Professionalism</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="--width: 95%"></div>
+                                </div>
+                                <span class="metric-percent">95%</span>
+                                <div class="metric-circle">
+                                    <svg viewBox="0 0 36 36" class="mini-circular-chart">
+                                        <path class="mini-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="mini-circle" stroke-dasharray="95, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Clarity</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="--width: 92%"></div>
+                                </div>
+                                <span class="metric-percent">92%</span>
+                                <div class="metric-circle">
+                                    <svg viewBox="0 0 36 36" class="mini-circular-chart">
+                                        <path class="mini-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="mini-circle" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Response Rate</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="--width: 87%"></div>
+                                </div>
+                                <span class="metric-percent">87%</span>
+                                <div class="metric-circle">
+                                    <svg viewBox="0 0 36 36" class="mini-circular-chart">
+                                        <path class="mini-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="mini-circle" stroke-dasharray="87, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="91, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                </div>
+                                <span class="stat-text">91% Quality</span>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number-large">5x</div>
+                                <span class="stat-text">Reply Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Testimonials</span>
+                <h2 class="section-title">Loved by Professionals Worldwide</h2>
+                <p class="section-subtitle">See what our users are saying about ProRise AI</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-stars">
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"ProRise AI completely transformed my LinkedIn game! I went from posting once a month to engaging daily. The AI suggestions are spot-on and save me hours every week."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar" style="background: linear-gradient(135deg, #7dde4f, #5ab836);">
+                            <span>SK</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Sarah Kim</div>
+                            <div class="author-title">Marketing Director @ TechCorp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card featured" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-stars">
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"As a job seeker, the Email for JD feature is a game-changer! I've sent out 50+ personalized applications in record time. Landed 3 interviews in my first week!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">
+                            <span>MP</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Michael Patel</div>
+                            <div class="author-title">Senior Software Engineer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-stars">
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"The comment enhancement feature helps me engage authentically with my network. My engagement rate has tripled, and I'm building real connections."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                            <span>EC</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Emily Chen</div>
+                            <div class="author-title">Product Manager @ StartupXYZ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-stars">
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"I was skeptical at first, but ProRise AI proved me wrong. The keyword alerts feature alone is worth the subscription - never miss important opportunities!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            <span>JR</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">James Rodriguez</div>
+                            <div class="author-title">Business Development Lead</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-stars">
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"Best investment for my career! The inbox assistant helps me respond professionally to recruiters and connections instantly. My network is growing rapidly."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar" style="background: linear-gradient(135deg, #ffd89b, #19547b);">
+                            <span>AL</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Amanda Lee</div>
+                            <div class="author-title">UX Designer @ CreativeAgency</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-stars">
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="#7dde4f"><path d="M10 1l2.5 6.5h6.5l-5 4 2 6.5-6-4.5-6 4.5 2-6.5-5-4h6.5z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"ProRise AI understands context perfectly. The rewrite feature makes my rough drafts sound polished and professional every single time. Highly recommend!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                            <span>DT</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">David Thompson</div>
+                            <div class="author-title">Content Strategist</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">FAQ</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-subtitle">Everything you need to know about ProRise AI</p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item" data-aos="fade-up" data-aos-delay="100">
+                    <button class="faq-question">
+                        <span>How does LinkedIn AI Assistant work?</span>
+                        <svg class="faq-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>LinkedIn AI Assistant uses advanced AI models to analyze context and generate professional, engaging content for your LinkedIn activities. Simply click the AI button when composing posts, comments, or messages, and choose from multiple AI-generated options.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
+                    <button class="faq-question">
+                        <span>Is my data secure and private?</span>
+                        <svg class="faq-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! We take privacy seriously. Your data is encrypted, never stored permanently, and only used to generate content. We comply with GDPR and don't share your information with third parties.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
+                    <button class="faq-question">
+                        <span>Can I customize the AI's writing style?</span>
+                        <svg class="faq-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! You can choose from multiple tones (professional, friendly, persuasive, etc.), adjust length, and even save custom templates that match your brand voice perfectly.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-aos="fade-up" data-aos-delay="100">
+                    <button class="faq-question">
+                        <span>Do I need to install anything?</span>
+                        <svg class="faq-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Just install our Chrome extension with one click. It seamlessly integrates with LinkedIn's interface, adding AI buttons exactly where you need them.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
+                    <button class="faq-question">
+                        <span>What if I'm not satisfied?</span>
+                        <svg class="faq-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We offer a 30-day money-back guarantee for all paid plans. If you're not completely satisfied, contact our support team for a full refund—no questions asked.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
+                    <button class="faq-question">
+                        <span>Can I use it for my team?</span>
+                        <svg class="faq-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! Our Enterprise plan includes team management, shared templates, usage analytics, and dedicated support. Perfect for sales teams, recruiters, and marketing professionals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact-us">
+        <div class="container">
+            <div class="cta-container" data-aos="zoom-in">
+                <div class="cta-content">
+                    <h2 class="cta-title">Ready to Transform Your LinkedIn Game?</h2>
+                    <p class="cta-subtitle">Join thousands of professionals who are already winning on LinkedIn with AI</p>
+                    <div class="cta-actions">
+                        <a href="#contact" class="btn btn-primary btn-lg">
+                            <span>Start Free Trial</span>
+                            <svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                            </svg>
+                        </a>
+                        <a href="#contact" class="btn btn-outline-white btn-lg">
+                            <span>Schedule Demo</span>
+                        </a>
+                    </div>
+                    <p class="cta-note">No credit card required • Cancel anytime • 30-day money-back guarantee</p>
+                </div>
+                <div class="cta-visual">
+                    <div class="cta-glow"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Connect Section -->
+    <section class="connect" id="contact">
+        <div class="container">
+            <div class="connect-container">
+                <div class="connect-content" data-aos="fade-right">
+                    <span class="section-badge">Get in Touch</span>
+                    <h2 class="connect-title">Ready to Transform Your LinkedIn Presence?</h2>
+                    <p class="connect-description">Join thousands of professionals already using ProRise AI to elevate their LinkedIn game. Request a personalized demo and see how we can help you achieve your goals.</p>
+                    <div class="connect-benefits">
+                        <div class="benefit-item">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>15-minute personalized demo</span>
+                        </div>
+                        <div class="benefit-item">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Custom strategy consultation</span>
+                        </div>
+                        <div class="benefit-item">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>No credit card required</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="connect-form-wrapper" data-aos="fade-left">
+                    <form class="connect-form" id="demoForm">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+1 (234) 567-890">
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="company">Company</label>
+                            <input type="text" id="company" name="company" placeholder="Your Company">
+                        </div> -->
+                        <div class="form-group">
+                            <label for="role">Your Role</label>
+                            <select id="role" name="role">
+                                <option value="">Select your role</option>
+                                <option value="sales">Sales Professional</option>
+                                <option value="marketing">Marketing Manager</option>
+                                <option value="recruiter">Recruiter</option>
+                                <option value="founder">Founder/CEO</option>
+                                <option value="job-seeker">Job Seeker</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">What are your goals? (Optional)</label>
+                            <textarea id="message" name="message" rows="4" placeholder="Tell us about your LinkedIn goals..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <span>Send to WhatsApp</span>
+                            <svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                            </svg>
+                        </button>
+                        <p class="form-note">Your request will be sent directly to WhatsApp</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <!-- Brand & Description Column -->
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="proriseai-logo-bg.png" alt="ProRise AI Logo" class="logo-icon">
+                        <!-- <span class="logo-text">ProRise AI</span> -->
+                    </div>
+                    <p class="footer-description">Transform your LinkedIn presence with AI-powered content creation. Boost engagement, save time, and grow your professional network effortlessly.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Twitter" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                        </a>
+                        <a href="#" aria-label="LinkedIn" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                        <a href="#" aria-label="Facebook" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        </a>
+                        <a href="#" aria-label="Instagram" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Resources Column -->
+                <div class="footer-column">
+                    <h4 class="footer-title">Resources</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal Column -->
+                <div class="footer-column">
+                    <h4 class="footer-title">Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">GDPR Compliance</a></li>
+                        <li><a href="#">License Agreement</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="footer-column">
+                    <h4 class="footer-title">Contact Us</h4>
+                    <ul class="contact-info">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            <a href="mailto:support@proriseai.com">muzamil2032@gmail.com</a>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                            </svg>
+                            <a href="tel:+1234567890">+92 (332) 4587 267</a>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            <span>Islamabad, Pakistan</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 ProRise AI. All rights reserved.</p>
+                <p>Made with <span class="heart">♥</span> Developed By Smile Software</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

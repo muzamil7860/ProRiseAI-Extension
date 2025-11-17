@@ -1,0 +1,76 @@
+{
+  "manifest_version": 3,
+  "name": "ProRise AI - LinkedIn Assistant",
+  "version": "3.3.6",
+  "description": "AI-powered content creation, rewriting, and suggestions for LinkedIn. Requires your own OpenAI API key.",
+  "author": "ProRise AI Team",
+  "homepage_url": "https://github.com/yourusername/prorise-ai",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "notifications",
+    "alarms",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://api.openai.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/*"],
+      "js": [
+        "utils/storage.js",
+        "utils/dom.js",
+        "utils/api.js",
+        "components/post-creator.js",
+        "components/comment-enhancer.js",
+        "components/reply-suggester.js",
+        "components/inbox-assistant.js",
+        "components/rewrite-anywhere.js",
+        "content/content.js"
+      ],
+      "css": ["styles/injected.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "ProRise AI - LinkedIn Assistant",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+
+  "commands": {
+    "get-suggestions": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S"
+      },
+      "description": "Get AI suggestions"
+    },
+    "rewrite-text": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+R"
+      },
+      "description": "Rewrite current text"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "minimum_chrome_version": "88"
+}

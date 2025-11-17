@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String?
+  password     String
+  role         UserRole   @default(USER)
+  planId       String?
+  plan         Plan?      @relation(fields: [planId], references: [id])
+  planExpiry   DateTime?
+  apiKey       String     @unique @default(cuid())
+  apiKeyActive Boolean    @default(true)
+  purchases    Purchase[]
+  stats        UserStats?
+  usageLogs    UsageLog[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([email])
+  @@index([apiKey])
+}
+
+model Plan {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?    @db.Text
+  price       Float
+  limits      Json       // JSON field for flexible limits
+  durationDays Int      @default(30)
+  isActive    Boolean   @default(true)
+  users       User[]
+  purchases   Purchase[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Purchase {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  planId          String
+  plan            Plan           @relation(fields: [planId], references: [id])
+  amount          Float
+  status          PurchaseStatus @default(PENDING)
+  paymentMethod   String?
+  transactionId   String?        @unique
+  purchaseDate    DateTime       @default(now())
+  expiryDate      DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+}
+
+model UserStats {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id])
+  postsCreated     Int       @default(0)
+  commentsEnhanced Int       @default(0)
+  repliesSuggested Int       @default(0)
+  textsRewritten   Int       @default(0)
+  totalUsage       Int       @default(0)
+  // Reset tracking
+  lastResetAt      DateTime  @default(now())
+  lastUsedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model UsageLog {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  action      UsageAction
+  details     Json?
+  timestamp   DateTime    @default(now())
+
+  @@index([userId])
+  @@index([timestamp])
+}
+
+enum UsageAction {
+  POST_CREATED
+  COMMENT_ENHANCED
+  REPLY_SUGGESTED
+  TEXT_REWRITTEN
+  MESSAGE_REPLIED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model SystemSettings {
+  id                String   @id @default(cuid())
+  openaiApiKey      String?  @db.Text // Encrypted OpenAI API key
+  openaiModel       String   @default("gpt-4o-mini")
+  maxTokens         Int      @default(500)
+  systemEmail       String?
+  maintenanceMode   Boolean  @default(false)
+  allowRegistration Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
